@@ -1,0 +1,140 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "odv": "https://example.org/ns/odv#"
+  },
+  "@type": "Dataset",
+  "@id": "https://example.org/dataset/argo-test-001",
+  "name": "Argo test dataset (provider → ODV generic spreadsheet demo)",
+  "description": "Template-driven conversion from a provider tab file to an ODV Generic Spreadsheet.",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/tab-separated-values",
+      "contentUrl": "file:///mnt/data/Argo_Test_Data.txt"
+    }
+  ],
+
+  "odv:source": {
+    "odv:delimiter": "\t",
+    "odv:missingValues": ["", "NA", "NaN", "-9999"]
+  },
+
+  "odv:odvSpreadsheet": {
+    "odv:outputFormat": "generic-spreadsheet",
+    "odv:separator": "TAB",
+    "odv:versionTag": "ODV Spreadsheet V4.8",
+    "odv:encodingTag": "UTF-8",
+
+    "odv:columns": [
+      {
+        "odv:sourceColumn": "Float",
+        "odv:odvLabel": "Cruise",
+        "odv:role": "meta",
+        "odv:var_type": "METACRUISE",
+        "odv:value_type": "INDEXED_TEXT",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 0
+      },
+      {
+        "odv:sourceColumn": "Station",
+        "odv:odvLabel": "Station",
+        "odv:role": "meta",
+        "odv:var_type": "METASTATION",
+        "odv:value_type": "TEXT:21",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 0
+      },
+      {
+        "odv:sourceColumn": null,
+        "odv:odvLabel": "Type",
+        "odv:role": "meta",
+        "odv:var_type": "METATYPE",
+        "odv:value_type": "TEXT:2",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 0,
+        "odv:defaultIfMissing": "C"
+      },
+      {
+        "odv:sourceColumn": "datetime",
+        "odv:odvLabel": "yyyy-mm-ddThh:mm:ss.sss",
+        "odv:role": "meta",
+        "odv:value_type": "DATETIME_ISO8601",
+        "odv:var_type": "METABASIC",
+        "odv:timeHandling": {
+          "odv:allowNoMilliseconds": true,
+          "odv:appendMillisecondsIfMissing": ".000"
+        }
+      },
+      {
+        "odv:sourceColumn": "Lon",
+        "odv:odvLabel": "Longitude [degrees_east]",
+        "odv:role": "meta",
+        "odv:var_type": "METALONGITUDE",
+        "odv:value_type": "FLOAT",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 3
+      },
+      {
+        "odv:sourceColumn": "Lat",
+        "odv:odvLabel": "Latitude [degrees_north]",
+        "odv:role": "meta",
+        "odv:var_type": "METALATITUDE",
+        "odv:value_type": "FLOAT",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 3
+      },
+      {
+        "odv:sourceColumn": "Project Name",
+        "odv:odvLabel": "Project Name",
+        "odv:role": "meta",
+        "odv:var_type": "METAPROJECT",
+        "odv:value_type": "INDEXED_TEXT",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 0,
+        "odv:comment": "PROJECT_NAME | Program under which the float was deployed"
+      },
+      {
+        "odv:sourceColumn": "Principal Investigator",
+        "odv:odvLabel": "Principal Investigator",
+        "odv:role": "meta",
+        "odv:var_type": "METABASIC",
+        "odv:value_type": "INDEXED_TEXT",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 0,
+        "odv:comment": "PI_NAME | Name of the principal investigator"
+      },
+
+      {
+        "odv:sourceColumn": "Pressure (original) [decibar]",
+        "odv:odvLabel": "Pressure (original) [decibar]",
+        "odv:role": "data",
+        "odv:value_type": "FLOAT",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 1,
+        "odv:is_primary_variable": true,
+        "odv:comment": "PRES | Sea water pressure, equals 0 at sea-level"
+      },
+      {
+        "odv:sourceColumn": "Temperature (original) [degrees_Celsius]",
+        "odv:odvLabel": "Temperature (original) [degrees_Celsius]",
+        "odv:role": "data",
+        "odv:value_type": "FLOAT",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 3,
+        "odv:is_primary_variable": false,
+        "odv:comment": "TEMP | Sea temperature in-situ ITS-90 scale"
+      },
+      {
+        "odv:sourceColumn": "Practical Salinity (original) [psu]",
+        "odv:odvLabel": "Practical Salinity (original) [psu]",
+        "odv:role": "data",
+        "odv:value_type": "FLOAT",
+        "odv:qf_schema": "ARGO",
+        "odv:significant_digits": 3,
+        "odv:is_primary_variable": false,
+        "odv:comment": "PSAL | Practical salinity"
+      }
+    ]
+  }
+}

@@ -1,0 +1,254 @@
+ODV Vocabulary (odv:)
+
+Namespace URI
+-------------
+https://<your-domain>/ns/odv#
+
+Prefix
+------
+odv
+
+Status
+------
+Draft (experimental)
+
+Purpose
+-------
+The odv: vocabulary defines a minimal set of JSON-LD terms used to describe
+how a data provider’s tabular dataset can be converted into an
+ODV Generic Spreadsheet.
+
+It is designed to be used as an extension to schema.org within
+ODIS-compatible JSON-LD.
+
+The vocabulary is procedural by design: it encodes deterministic conversion
+rules that allow automated generation of ODV spreadsheets from provider data.
+
+
+Design Principles
+-----------------
+1. schema.org first
+   Use schema.org for dataset discovery (Dataset, distribution, contentUrl).
+
+2. ODV-specific only where necessary
+   odv: terms exist only where schema.org has no suitable concept.
+
+3. No hidden logic
+   All conversion-relevant rules must be explicitly stated in the JSON.
+
+4. Converter-local semantics
+   Consumers MUST NOT rely on dereferencing the namespace URI at runtime.
+
+
+Vocabulary Overview
+-------------------
+The odv: vocabulary introduces four conceptual groups:
+
+1. Source description – how to read the provider file
+2. Target description – what ODV format to generate
+3. Column mapping – how each output column is produced
+4. Formatting and defaults – value handling rules
+
+
+Classes
+-------
+No formal RDF/OWL classes are defined.
+The vocabulary relies on structured JSON objects with well-defined properties.
+
+
+Properties
+==========
+
+1. Source description
+--------------------
+
+odv:source
+Type: Object
+Required: Yes (for tabular sources)
+
+Describes how the provider dataset should be parsed.
+
+Properties of odv:source:
+
+- odv:delimiter
+  Type: string
+  Required: Yes
+  Description: Column delimiter in the provider file
+               (e.g. "\t", ",", ";").
+
+- odv:missingValues
+  Type: array of string
+  Required: No
+  Description: Values interpreted as missing
+               (e.g. "", "NA", "-9999").
+
+
+2. Target ODV spreadsheet description
+-------------------------------------
+
+odv:odvSpreadsheet
+Type: Object
+Required: Yes
+
+Defines the target ODV output format.
+
+Properties of odv:odvSpreadsheet:
+
+- odv:outputFormat
+  Type: string
+  Required: Yes
+  Description: Output type.
+               Currently supported: "generic-spreadsheet".
+
+- odv:separator
+  Type: string
+  Required: Yes
+  Description: Output delimiter ("TAB" or ";").
+
+- odv:versionTag
+  Type: string
+  Required: No
+  Description: Value for the ODV header tag
+               // <Version>...</Version>.
+
+- odv:encodingTag
+  Type: string
+  Required: No
+  Description: Value for the ODV header tag
+               // <Encoding>...</Encoding>.
+
+- odv:columns
+  Type: array of object
+  Required: Yes
+  Description: Ordered list of column specifications.
+
+
+3. Column specification
+-----------------------
+
+Each entry in odv:columns defines exactly one output column
+in the ODV spreadsheet.
+
+Column object properties:
+
+- odv:sourceColumn
+  Type: string or null
+  Required: Yes
+  Description: Column name in the provider file,
+               or null if the column is synthetic.
+
+- odv:odvLabel
+  Type: string
+  Required: Yes
+  Description: Exact column label written to the ODV header line.
+
+- odv:role
+  Type: string
+  Required: Yes
+  Allowed values: "meta", "data"
+  Description: Logical role of the column.
+
+- odv:var_type
+  Type: string
+  Required: Conditional
+  Description: ODV MetaVariable type
+               (e.g. METACRUISE, METALATITUDE).
+               Required for meta columns.
+
+- odv:value_type
+  Type: string
+  Required: Yes
+  Description: ODV value type
+               (e.g. FLOAT, TEXT:21, INDEXED_TEXT).
+
+- odv:qf_schema
+  Type: string
+  Required: No
+  Description: Name of the quality-flag schema
+               (e.g. "ARGO").
+
+- odv:significant_digits
+  Type: integer
+  Required: No
+  Description: Significant digits for ODV variable declaration.
+
+- odv:is_primary_variable
+  Type: boolean
+  Required: No
+  Description: Marks a primary data variable.
+
+- odv:comment
+  Type: string
+  Required: No
+  Description: Human-readable variable description
+               used in ODV header comments.
+
+- odv:defaultIfMissing
+  Type: string or number
+  Required: No
+  Description: Constant value used when the source column
+               is missing or empty.
+
+
+4. Time handling
+----------------
+
+odv:timeHandling
+Type: Object
+Applies to: time columns only
+
+Defines how time values are normalized.
+
+Properties:
+
+- odv:allowNoMilliseconds
+  Type: boolean
+  Description: Allow timestamps without fractional seconds.
+
+- odv:appendMillisecondsIfMissing
+  Type: string
+  Description: Suffix appended when milliseconds are missing
+               (e.g. ".000").
+
+
+Semantics and Processing Rules
+==============================
+
+1. Column order matters
+   The order of odv:columns defines the exact output column order.
+
+2. Defaults are applied per row
+   odv:defaultIfMissing is applied when the source value is
+   missing or undefined.
+
+3. Time normalization is optional
+   If odv:timeHandling is not defined, time values are passed
+   through unchanged.
+
+4. Quality flags are declarative
+   The vocabulary declares the schema name only; it does not
+   define quality-flag semantics.
+
+
+Relationship to schema.org / ODIS
+=================================
+
+- odv: terms are used in addition to schema.org terms.
+- Tools not aware of odv: may safely ignore it.
+- ODIS harvesters will index datasets using schema.org metadata only.
+
+
+Stability and Versioning
+=======================
+
+- Property names are intended to be stable once published.
+- New properties may be added.
+- Existing properties must not change semantics.
+
+
+Final Note
+==========
+
+The odv: vocabulary is intentionally not a general data model.
+It is a conversion contract between a data provider,
+a metadata description, and an ODV generator.

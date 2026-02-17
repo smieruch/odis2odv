@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://<your-domain>/ns/odv/schema/odv-odis2odv.schema.json",
+  "title": "ODIS JSON-LD with odv: vocabulary for ODV Generic Spreadsheet conversion",
+  "type": "object",
+  "required": ["@context", "@type", "name", "distribution", "odv:source", "odv:odvSpreadsheet"],
+  "properties": {
+    "@context": {
+      "description": "JSON-LD context. Typically includes schema.org as @vocab and an odv prefix mapping.",
+      "oneOf": [
+        { "type": "object" },
+        { "type": "array" },
+        { "type": "string" }
+      ]
+    },
+    "@type": {
+      "description": "JSON-LD type. For this profile it MUST include Dataset.",
+      "oneOf": [
+        { "const": "Dataset" },
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "contains": { "const": "Dataset" }
+        }
+      ]
+    },
+    "@id": {
+      "description": "Stable identifier for the dataset (ideally an HTTP URL).",
+      "type": "string",
+      "minLength": 1
+    },
+
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "license": { "type": "string" },
+    "keywords": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
+    },
+
+    "distribution": {
+      "description": "Where the source data can be downloaded from. The converter uses contentUrl.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/DataDownload" }
+    },
+
+    "variableMeasured": {
+      "description": "Optional schema.org variableMeasured list for discoverability. Converter may ignore.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "$ref": "#/$defs/VariableMeasuredItem" } }
+      ]
+    },
+
+    "odv:source": { "$ref": "#/$defs/OdvSource" },
+    "odv:odvSpreadsheet": { "$ref": "#/$defs/OdvSpreadsheet" }
+  },
+
+  "additionalProperties": true,
+
+  "$defs": {
+    "DataDownload": {
+      "type": "object",
+      "required": ["@type", "contentUrl"],
+      "properties": {
+        "@type": {
+          "oneOf": [
+            { "const": "DataDownload" },
+            { "const": "MediaObject" }
+          ]
+        },
+        "contentUrl": {
+          "description": "Download location of the provider file (HTTP(S) URL in production; file:// for local testing).",
+          "type": "string",
+          "minLength": 1
+        },
+        "encodingFormat": {
+          "description": "MIME type or format hint (e.g. text/csv, text/tab-separated-values).",
+          "type": "string"
+        },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "sha256": {
+          "description": "Optional checksum (non-standard schema.org; tolerated).",
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "VariableMeasuredItem": {
+      "description": "schema.org variableMeasured may be string or PropertyValue-like object.",
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/$defs/PropertyValue" }
+      ]
+    },
+
+    "PropertyValue": {
+      "type": "object",
+      "properties": {
+        "@type": { "const": "PropertyValue" },
+        "name": { "type": "string" },
+        "unitText": { "type": "string" },
+        "propertyID": { "type": "string" }
+      },
+      "required": ["name"],
+      "additionalProperties": true
+    },
+
+    "OdvSource": {
+      "type": "object",
+      "required": ["odv:delimiter"],
+      "properties": {
+        "odv:delimiter": {
+          "description": "Delimiter used in the provider file.",
+          "type": "string",
+          "minLength": 1
+        },
+        "odv:missingValues": {
+          "description": "Strings treated as missing.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "OdvSpreadsheet": {
+      "type": "object",
+      "required": ["odv:outputFormat", "odv:separator", "odv:columns"],
+      "properties": {
+        "odv:outputFormat": {
+          "type": "string",
+          "enum": ["generic-spreadsheet"]
+        },
+        "odv:separator": {
+          "description": "Delimiter in the generated ODV spreadsheet.",
+	  "type": "string",
+	  "enum": ["TAB", ";"]
+        },
+        "odv:versionTag": { "type": "string" },
+        "odv:encodingTag": { "type": "string" },
+
+        "odv:columns": {
+          "description": "Ordered list of output column specs.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ColumnSpec" }
+        }
+      },
+      "additionalProperties": true,
+
+      "allOf": [
+        {
+          "description": "If any column is role=meta, it should normally have odv:var_type (enforced per-column below).",
+          "type": "object"
+        }
+      ]
+    },
+
+    "ColumnSpec": {
+      "type": "object",
+      "required": ["odv:sourceColumn", "odv:odvLabel", "odv:role", "odv:value_type"],
+      "properties": {
+        "odv:sourceColumn": {
+          "description": "Name of the provider column, or null if synthetic (defaultIfMissing should then be set).",
+          "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+        },
+        "odv:odvLabel": {
+          "description": "Exact column label written to ODV header line.",
+          "type": "string",
+          "minLength": 1
+        },
+        "odv:role": {
+          "type": "string",
+          "enum": ["meta", "data"]
+        },
+
+        "odv:var_type": {
+          "description": "ODV variable type for meta variables (e.g. METACRUISE, METALONGITUDE).",
+          "type": "string",
+          "minLength": 1
+        },
+
+        "odv:value_type": {
+          "description": "ODV value type (e.g. FLOAT, TEXT:21, INDEXED_TEXT).",
+          "type": "string",
+          "minLength": 1
+        },
+        "odv:qf_schema": { "type": "string", "minLength": 1 },
+        "odv:significant_digits": { "type": "integer", "minimum": 0 },
+        "odv:is_primary_variable": { "type": "boolean" },
+        "odv:comment": { "type": "string" },
+
+        "odv:defaultIfMissing": {
+          "description": "Constant value used when sourceColumn is null or source value is missing.",
+          "oneOf": [
+            { "type": "string" },
+            { "type": "number" },
+            { "type": "boolean" }
+          ]
+        },
+
+        "odv:timeHandling": { "$ref": "#/$defs/TimeHandling" }
+      },
+      "additionalProperties": true,
+
+      "allOf": [
+        {
+          "if": {
+            "properties": { "odv:role": { "const": "meta" } },
+            "required": ["odv:role"]
+          },
+          "then": {
+            "required": ["odv:var_type"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "odv:sourceColumn": { "type": "null" } },
+            "required": ["odv:sourceColumn"]
+          },
+          "then": {
+            "required": ["odv:defaultIfMissing"]
+          }
+        }
+      ]
+    },
+
+    "TimeHandling": {
+      "type": "object",
+      "properties": {
+        "odv:allowNoMilliseconds": { "type": "boolean" },
+        "odv:appendMillisecondsIfMissing": {
+          "description": "Suffix such as .000",
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
