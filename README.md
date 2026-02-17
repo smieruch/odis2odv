@@ -25,15 +25,16 @@ This project bridges that gap by using:
 
 ## Repository Contents
 
-├── README.md
-├── profile/
-│ └── odis-profile-odv-generic-spreadsheet.md
-├── vocabulary/
-│ └── odv-vocabulary-spec.txt
-├── schema/
-│ └── odv-odis2odv.schema.json
-└── examples/
-└── ocean-data-test-001.json
+├── examples  
+│   └── ocean-data-test-001.json  
+├── profile  
+│   └── odis-profile-odv-generic-spreadsheet.md  
+├── schema  
+│   └── odv-odis2odv.schema.json  
+├── vocabulary  
+│   └── odv-vocabulary-spec.txt  
+├── README.md  
+
 
 
 ### `profile/`
