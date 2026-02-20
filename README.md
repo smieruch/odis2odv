@@ -1,87 +1,111 @@
 # ODIS → ODV Generic Spreadsheet Profile
 
-This repository defines an **ODIS-compatible profile** and supporting specifications for the **automatic generation of ODV Generic Spreadsheets** from provider-supplied tabular ocean data.
+This repository defines an **ODIS-compatible, schema.org-only profile** for the
+**automatic generation of ODV Generic Spreadsheets** from provider-supplied
+tabular ocean data (CSV / TSV).
 
-The goal is to allow ocean data producers to publish **simple datasets plus structured metadata**, from which valid ODV spreadsheets can be generated deterministically.
+The goal is to allow ocean data providers to publish **simple data files plus
+structured, web-native metadata**, from which valid ODV Generic Spreadsheets
+can be generated **deterministically and reproducibly**.
 
 ---
 
 ## Motivation
 
-Many ocean data providers publish tabular data (CSV/TSV) but do not natively produce ODV files.
+Many ocean data providers publish tabular data (CSV/TSV), but do not natively
+produce ODV files.
 
-ODV, however, requires:
+ODV Generic Spreadsheets require:
+
 - strict column labels,
-- mandatory meta-variables,
-- specific formatting rules.
+- mandatory geographic metadata (longitude, latitude),
+- specific conventions for variables and metadata.
 
 This project bridges that gap by using:
 
-- **schema.org / JSON-LD** for discovery (ODIS-compatible)
-- a small **`odv:` extension vocabulary** for executable conversion rules
-- **JSON Schema** for validation and robustness
+- **schema.org / JSON-LD** for dataset discovery (ODIS-compatible),
+- **schema.org-native mapping patterns** to describe column mappings,
+- **JSON Schema** to validate mapping metadata before conversion.
+
+No custom vocabularies are required.
+
+---
+
+## Design Principles
+
+- **Schema.org only**  
+  No custom namespaces or extension vocabularies are used.
+- **Input-centric mapping**  
+  Mappings are defined from *source columns* to *ODV output columns*.
+- **Provider-friendly**  
+  Metadata is readable, writable, and understandable by non-programmers.
+- **ODIS-compatible**  
+  Discovery metadata and conversion metadata coexist in one JSON-LD document.
+- **Deterministic conversion**  
+  Given the same input and metadata, the same ODV spreadsheet is produced.
 
 ---
 
 ## Repository Contents
 
-├── examples  
-│   └── ocean-data-test-001.json  
-├── profile  
-│   └── odis-profile-odv-generic-spreadsheet.md  
-├── schema  
-│   └── odv-odis2odv.schema.json  
-├── vocabulary  
-│   └── odv-vocabulary-spec.txt  
-├── README.md  
+├── examples
+│   ├── ocean-data-test-003.json
+│   └── ocean-data-test-003.txt
+├── profile
+│   └── odis-profile-odv-generic-spreadsheet.md
+├── schema
+│   └── odv-odis2odv.schema.json
+└── README.md
 
+
+---
 
 
 ### `profile/`
-ODIS Book–style profile description defining the pattern and its scope.
-
-### `vocabulary/`
-Human-readable specification of the `odv:` extension vocabulary.
+Human-readable profile description (ODIS Book style) defining scope,
+semantics, and processing rules.
 
 ### `schema/`
-JSON Schema used to validate dataset metadata files before conversion.
+JSON Schema for validating schema.org JSON-LD mapping documents.
 
 ### `examples/`
 Minimal, working JSON-LD examples that:
-- pass schema validation
-- can drive an ODV Generic Spreadsheet generator
+
+- pass schema validation,
+- can drive an ODV Generic Spreadsheet generator.
 
 ---
 
-## Core Concepts
+## Core Concept: Column Mapping via `variableMeasured`
 
-### Discovery vs Execution
+Column mappings are expressed using **schema.org-native patterns**:
 
-This project deliberately separates concerns:
+- `Dataset.variableMeasured[]`
+- each entry is a `PropertyValue`
 
-| Layer | Purpose |
-|------|--------|
-| **schema.org** | Dataset discovery and indexing (ODIS) |
-| **odv:** vocabulary | Deterministic ODV generation rules |
+### Mapping model
 
-ODIS harvesters can index datasets without understanding `odv:`.
+For each source column:
 
-Converters can ignore discovery metadata and focus on execution.
+- `PropertyValue.name`  
+  → exact header of the **source column**
+- `additionalProperty(name="targetColumn")`  
+  → header of the **ODV output column**
 
----
+Example:
 
-## What This Enables
-
-Using this profile, a dataset publisher can:
-
-1. Publish a **simple tabular data file**
-2. Publish a **JSON-LD metadata file** describing:
-   - how to read the data
-   - how to map columns to ODV
-3. Automatically generate:
-   - a valid **ODV Generic Spreadsheet**
-
-No manual ODV formatting is required by the data provider.
+```json
+{
+  "@type": "PropertyValue",
+  "name": "Lon",
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "targetColumn",
+      "value": "Longitude [degrees_east]"
+    }
+  ]
+}
 
 ---
 

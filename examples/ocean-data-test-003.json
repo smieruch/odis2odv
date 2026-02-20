@@ -1,0 +1,117 @@
+{
+  "@context": { "@vocab": "https://schema.org/" },
+  "@type": "Dataset",
+  "@id": "https://example.org/dataset/ocean-data-test-003.json",
+  "identifier": "https://example.org/dataset/ocean-data-test-003.html", 
+  "name": "Provider → ODV Generic Spreadsheet column mapping",
+  "description": "Schema.org-only column mapping from provider TSV to ODV Generic Spreadsheet. Each PropertyValue in variableMeasured represents one original source column (PropertyValue.name). The output column name is given by additionalProperty with name='targetColumn'. additionalProperty name='dataType' uses schema.org datatypes as simple strings (Text, Number, DateTime) where needed. additionalProperty name='role' distinguishes metadata ('meta') from measured variables ('data') where applicable. Longitude and latitude are mandatory for all datasets; records without geographic coordinates cannot be converted to an ODV Generic Spreadsheet. The primary variable (ODV primary axis) is defined once at dataset level via additionalProperty name='primaryVariableTargetColumn'. P01 and description are optional.",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/tab-separated-values",
+      "contentUrl": "https://example.org/dataset/ocean-data-test-003.txt",
+    }
+  ],
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "primaryVariableTargetColumn",
+      "value": "Pressure (original) [decibar]"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "columnSeparator",
+      "value": "\t"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "fillValue",
+      "value": ""
+    }      
+  ],
+  "variableMeasured": [
+    {
+      "@type": "PropertyValue",
+      "name": "Float ID",
+      "description": "The name or code of a cruise or other activity during which data was collected.",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Cruise" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Profile Number",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Station" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "datetime",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "yyyy-mm-ddThh:mm:ss.sss" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Lon",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Longitude [degrees_east]" },
+        { "@type": "PropertyValue", "name": "P01", "value": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Lat",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Latitude [degrees_north]" },
+        { "@type": "PropertyValue", "name": "P01", "value": "https://vocab.nerc.ac.uk/collection/P01/current/ALATZZ01/" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Project Name",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Project Name" },
+        { "@type": "PropertyValue", "name": "dataType", "value": "Text" },
+        { "@type": "PropertyValue", "name": "role", "value": "meta" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Principal Investigator",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Principal Investigator" },
+        { "@type": "PropertyValue", "name": "dataType", "value": "Text" },
+        { "@type": "PropertyValue", "name": "role", "value": "meta" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Pressure (original) [decibar]",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Pressure (original) [decibar]" },
+        { "@type": "PropertyValue", "name": "dataType", "value": "Number" },
+        { "@type": "PropertyValue", "name": "role", "value": "data" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Temperature (original) [degrees_Celsius]",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Temperature (original) [degrees_Celsius]" },
+        { "@type": "PropertyValue", "name": "dataType", "value": "Number" },
+        { "@type": "PropertyValue", "name": "role", "value": "data" }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Practical Salinity (original) [psu]",
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "targetColumn", "value": "Practical Salinity (original) [psu]" },
+        { "@type": "PropertyValue", "name": "dataType", "value": "Number" },
+        { "@type": "PropertyValue", "name": "role", "value": "data" }
+      ]
+    }
+  ]
+}
