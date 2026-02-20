@@ -48,14 +48,14 @@ No custom vocabularies are required.
 
 ## Repository Contents
 
-├── examples
-│   ├── ocean-data-test-003.json
-│   └── ocean-data-test-003.txt
-├── profile
-│   └── odis-profile-odv-generic-spreadsheet.md
-├── schema
-│   └── odv-odis2odv.schema.json
-└── README.md
+├── examples  
+│   ├── ocean-data-test-003.json  
+│   └── ocean-data-test-003.txt  
+├── profile  
+│   └── odis-profile-odv-generic-spreadsheet.md  
+├── schema  
+│   └── odv-odis2odv.schema.json  
+└── README.md  
 
 
 ---
@@ -106,6 +106,7 @@ Example:
     }
   ]
 }
+```
 
 ---
 
@@ -124,7 +125,7 @@ import json
 from jsonschema import validate
 
 schema = json.load(open("schema/odv-odis2odv.schema.json"))
-instance = json.load(open("examples/ocean-data-test-001.json"))
+instance = json.load(open("examples/ocean-data-test-003.json"))
 
 validate(instance=instance, schema=schema)
 print("Metadata is valid")
