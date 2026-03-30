@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://<your-domain>/ns/odv/schema/odv-odis2odv.schemaorg-only.schema.json",
+  "title": "ODIS JSON-LD (schema.org only) for ODV Generic Spreadsheet column mapping",
+  "type": "object",
+  "required": ["@context", "@type", "@id", "identifier", "name", "distribution", "variableMeasured"],
+  "properties": {
+    "@context": {
+      "description": "JSON-LD context. Typically schema.org as @vocab.",
+      "oneOf": [{ "type": "object" }, { "type": "array" }, { "type": "string" }]
+    },
+    "@type": {
+      "description": "JSON-LD type. For this profile it MUST include Dataset.",
+      "oneOf": [
+        { "const": "Dataset" },
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "contains": { "const": "Dataset" }
+        }
+      ]
+    },
+    "@id": {
+      "description": "Stable identifier for the JSON-LD resource (ideally an HTTP URL).",
+      "type": "string",
+      "minLength": 1
+    },
+
+    "identifier": {
+      "description": "Human-facing landing page URL for the dataset.",
+      "type": "string",
+      "minLength": 1
+    },
+
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "license": { "type": "string" },
+
+    "keywords": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
+    },
+
+    "distribution": {
+      "description": "Where the source data can be downloaded from. Converters use contentUrl.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/DataDownload" }
+    },
+
+    "additionalProperty": {
+      "description": "Optional dataset-level conversion hints (primary variable, separator, fill value).",
+      "type": "array",
+      "items": { "$ref": "#/$defs/DatasetAdditionalProperty" }
+    },
+
+    "variableMeasured": {
+      "description": "Column mapping list. Each item describes one source column and its target output column.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ColumnMapping" }
+    }
+  },
+
+  "additionalProperties": true,
+
+  "$defs": {
+    "DataDownload": {
+      "type": "object",
+      "required": ["@type", "contentUrl"],
+      "properties": {
+        "@type": {
+          "oneOf": [
+            { "const": "DataDownload" },
+            { "const": "MediaObject" }
+          ]
+        },
+        "contentUrl": {
+          "description": "Download location of the provider data file (HTTP(S) URL in production; file:// for local testing).",
+          "type": "string",
+          "minLength": 1
+        },
+        "encodingFormat": {
+          "description": "MIME type or format hint (e.g. text/csv, text/tab-separated-values).",
+          "type": "string"
+        },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "sha256": {
+          "description": "Optional checksum (non-standard schema.org; tolerated).",
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "DatasetAdditionalProperty": {
+      "description": "Dataset-level hints expressed as schema.org PropertyValue.",
+      "type": "object",
+      "required": ["@type", "name", "value"],
+      "properties": {
+        "@type": { "const": "PropertyValue" },
+        "name": {
+          "type": "string",
+          "enum": ["primaryVariableTargetColumn", "columnSeparator", "fillValue"]
+        },
+        "value": {
+          "description": "Any literal value; converters interpret based on 'name'.",
+          "oneOf": [
+            { "type": "string" },
+            { "type": "number" },
+            { "type": "boolean" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "ColumnMapping": {
+      "description": "One mapping item for one source column.",
+      "type": "object",
+      "required": ["@type", "name", "additionalProperty"],
+      "properties": {
+        "@type": { "const": "PropertyValue" },
+        "name": {
+          "description": "Exact header/name of the source column.",
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "description": "Optional human-readable description of the source/target meaning.",
+          "type": "string"
+        },
+        "additionalProperty": {
+          "description": "Per-column mapping metadata (must include targetColumn).",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ColumnAdditionalProperty" },
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "required": ["@type", "name", "value"],
+                "properties": {
+                  "@type": { "const": "PropertyValue" },
+                  "name": { "const": "targetColumn" },
+                  "value": { "type": "string", "minLength": 1 }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "ColumnAdditionalProperty": {
+      "description": "Per-column metadata expressed as schema.org PropertyValue.",
+      "type": "object",
+      "required": ["@type", "name", "value"],
+      "properties": {
+        "@type": { "const": "PropertyValue" },
+        "name": {
+          "type": "string",
+          "enum": ["targetColumn", "P01", "dataType", "role"]
+        },
+        "value": {}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "name": { "const": "targetColumn" } },
+            "required": ["name"]
+          },
+          "then": {
+            "properties": { "value": { "type": "string", "minLength": 1 } },
+            "required": ["value"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "name": { "const": "P01" } },
+            "required": ["name"]
+          },
+          "then": {
+            "properties": {
+              "value": { "type": "string", "pattern": "^https?://.+$" }
+            },
+            "required": ["value"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "name": { "const": "dataType" } },
+            "required": ["name"]
+          },
+          "then": {
+            "properties": {
+              "value": { "type": "string", "enum": ["Text", "Number", "DateTime"] }
+            },
+            "required": ["value"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "name": { "const": "role" } },
+            "required": ["name"]
+          },
+          "then": {
+            "properties": {
+              "value": { "type": "string", "enum": ["meta", "data"] }
+            },
+            "required": ["value"]
+          }
+        }
+      ],
+      "additionalProperties": true
+    }
+  }
+}
