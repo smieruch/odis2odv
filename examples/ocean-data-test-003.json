@@ -16,6 +16,16 @@
   "additionalProperty": [
     {
       "@type": "PropertyValue",
+      "name": "DataField",
+      "value": "Ocean"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "DataType",
+      "value": "Profiles"
+    },
+    {
+      "@type": "PropertyValue",
       "name": "primaryVariableTargetColumn",
       "value": "Pressure (original) [decibar]"
     },
@@ -42,6 +52,7 @@
     {
       "@type": "PropertyValue",
       "name": "Profile Number",
+      "description": "An ODV Station, e.g. a profile or time series is constant in time and longitute/latitude",
       "additionalProperty": [
         { "@type": "PropertyValue", "name": "targetColumn", "value": "Station" }
       ]
