@@ -5,6 +5,7 @@
   "identifier": "https://example.org/dataset/ocean-data-test-003.html", 
   "name": "Provider → ODV Generic Spreadsheet column mapping",
   "description": "Schema.org-only column mapping from provider TSV to ODV Generic Spreadsheet. Each PropertyValue in variableMeasured represents one original source column (PropertyValue.name). The output column name is given by additionalProperty with name='targetColumn'. additionalProperty name='dataType' uses schema.org datatypes as simple strings (Text, Number, DateTime) where needed. additionalProperty name='role' distinguishes metadata ('meta') from measured variables ('data') where applicable. Longitude and latitude are mandatory for all datasets; records without geographic coordinates cannot be converted to an ODV Generic Spreadsheet. The primary variable (ODV primary axis) is defined once at dataset level via additionalProperty name='primaryVariableTargetColumn'. P01 and description are optional.",
+  "keywords": "METS, time-series, ODV-compatible, ocean data"
   "distribution": [
     {
       "@type": "DataDownload",

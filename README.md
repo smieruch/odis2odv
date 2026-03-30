@@ -129,6 +129,7 @@ instance = json.load(open("examples/ocean-data-test-003.json"))
 
 validate(instance=instance, schema=schema)
 print("Metadata is valid")
+```
 
 ## License
 
