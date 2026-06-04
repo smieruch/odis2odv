@@ -7,198 +7,300 @@ https://creativecommons.org/licenses/by/4.0/
 
 **Profile ID:** odis-profile-odv-generic-spreadsheet  
 **Status:** Draft  
-**Version:** 0.2
+**Version:** 0.3
 
 ---
 
 ## Overview
 
-This profile defines a **web-first pattern** for publishing ocean datasets so they can be **automatically converted into ODV Generic Spreadsheets**.
+This profile defines a web-first pattern for publishing ocean datasets so they
+can be automatically converted into ODV Generic Spreadsheets.
 
 It uses:
-- **schema.org** for dataset discovery and access, and
-- **schema.org-native patterns** (`variableMeasured` + `PropertyValue` + `additionalProperty`) to describe deterministic conversion rules.
 
-The profile targets data providers who publish tabular data but do not natively produce ODV files, and services that generate ODV outputs programmatically.
+- schema.org for dataset discovery and access
+- schema.org-native patterns (`variableMeasured`, `PropertyValue`,
+  `additionalProperty`) to describe deterministic conversion rules
+
+The profile targets data providers publishing CSV/TSV style tabular datasets
+and services that generate ODV-compatible outputs programmatically.
 
 ---
 
 ## Scope
 
 ### In scope
+
 - Dataset landing pages with embedded JSON-LD
-- Tabular provider data (e.g. CSV, TSV)
-- Deterministic generation of ODV Generic Spreadsheets using mapping metadata embedded in JSON-LD
+- Tabular provider data (CSV, TSV)
+- Deterministic generation of ODV Generic Spreadsheets
+- ODV collection metadata description
+- Source-column to ODV-column mappings
 
 ### Out of scope
-- Scientific validation of values
+
+- Scientific quality control
 - Quality flag semantics
-- ODV Collections or NetCDF generation (future extensions)
+- ODV binary collections
+- NetCDF generation
 
 ---
 
 ## Alignment with ODIS Patterns
 
-This profile follows established ODIS patterns:
+This profile follows ODIS conventions:
 
-- **Dataset Landing Pages** with embedded JSON-LD
-- **schema.org/Dataset** for discovery
-- **distribution.contentUrl** for machine-accessible downloads
-- Use of **schema.org extension points** (`additionalProperty`) for domain-specific requirements
+- `schema.org/Dataset` for discovery
+- `distribution.contentUrl` for machine-accessible source files
+- `variableMeasured` for variable descriptions
+- `additionalProperty` as the schema.org extension mechanism
 
-ODIS harvesters can index datasets conforming to this profile **without understanding the mapping details**.
+ODIS harvesters can index datasets without understanding the ODV conversion
+metadata.
 
 ---
 
 ## Vocabularies Used
 
-### schema.org (Required)
+Only schema.org terms are required.
 
-The profile uses only schema.org terms.
-
-Core required terms:
+Core terms:
 
 - Dataset
-- distribution
 - DataDownload
+- PropertyValue
+- distribution
 - contentUrl
 - variableMeasured
-- PropertyValue
 - additionalProperty
 
-These terms support dataset discovery, indexing, access, and mapping metadata.
+No custom vocabulary is required.
 
 ---
 
-## Required Metadata
+## Required Dataset Metadata
 
-### Dataset-Level (schema.org)
-
-A conforming dataset MUST include:
+A conforming dataset MUST provide:
 
 - `@type: Dataset`
-- `@id` (a resolvable identifier for the JSON-LD resource)
-- `identifier` (a landing page URL intended for humans)
+- `@id`
+- `identifier`
 - `name`
 - `description`
-- `distribution` with at least one `DataDownload`
-- `distribution.contentUrl` pointing to a downloadable **source data file** (CSV/TSV/etc.)
+- `distribution`
+- `distribution.contentUrl`
+- `variableMeasured`
 
-**Provider guidance (informative):**  
-Longitude and latitude are mandatory for ODV conversion; records without geographic coordinates cannot be converted.
+Longitude and latitude mappings are mandatory for successful ODV conversion.
 
 ---
 
-## Global Conversion Hints (schema.org / additionalProperty)
+## Dataset-Level ODV Metadata and Conversion Hints
 
-Dataset-level conversion hints are expressed using:
+Dataset-level information is encoded as:
 
-- `Dataset.additionalProperty[]` entries of type `PropertyValue`
+`Dataset.additionalProperty[]`
 
-The following dataset-level hints are RECOMMENDED:
+Each entry is a schema.org `PropertyValue`.
 
-- `primaryVariableTargetColumn`  
-  - **Value:** the name of the output column to be treated as the primary ODV variable (e.g., Pressure)
-- `columnSeparator`  
-  - **Value:** column delimiter used in the source file (e.g., `\t`, `,`, `;`)
-- `fillValue`  
-  - **Value:** a provider fill value/missing value marker (any literal value)
+### ODV Collection Metadata
 
-All dataset-level hints are optional unless a converter requires them.
+#### DataField
+
+Defines the ODV scientific domain.
+
+Example:
+
+```json
+{
+  "@type": "PropertyValue",
+  "name": "DataField",
+  "value": "Ocean"
+}
+```
+
+#### DataType
+
+Defines the ODV data organization.
+
+Supported examples:
+
+- Profiles
+- TimeSeries
+- Trajectories
+
+Example:
+
+```json
+{
+  "@type": "PropertyValue",
+  "name": "DataType",
+  "value": "Profiles"
+}
+```
+
+---
+
+## Conversion Hints
+
+### primaryVariableTargetColumn
+
+Defines the ODV primary variable.
+
+For profile datasets this is typically required.
+
+Example:
+
+```json
+{
+  "name": "primaryVariableTargetColumn",
+  "value": "Pressure (original) [decibar]"
+}
+```
+
+### columnSeparator
+
+Defines the source file separator.
+
+Examples:
+
+- tab (`\t`)
+- comma
+- semicolon
+
+### fillValue
+
+Defines the missing value marker.
 
 ---
 
 ## Column Mapping Model
 
-### Mapping container (schema.org)
+Column mappings are represented through:
 
-Column mappings are expressed as:
+`Dataset.variableMeasured[]`
 
-- `Dataset.variableMeasured[]` entries of type `PropertyValue`
+Each item represents one source column.
 
-Each `PropertyValue` represents **one source column**.
+Required:
 
-**Required per source column**
-- `name`  
-  - the exact header/name of the source column
+- `PropertyValue.name`
 
-**Recommended per source column**
-- `additionalProperty[]` includes an entry:
-  - `PropertyValue(name="targetColumn", value="<ODV output header>")`
+The value MUST match the original source column header.
 
-This expresses a deterministic mapping from the source column to the ODV output column.
+The target ODV column is defined by:
 
-### Optional per-column hints
+`additionalProperty(name="targetColumn")`
 
-Per-source-column optional hints MAY be attached via `additionalProperty[]`:
+Example:
 
-- `dataType`  
-  - Value: one of `Text`, `Number`, `DateTime` (string values), when needed
-- `role`  
-  - Value: `meta` or `data`, when applicable
-- `P01`  
-  - Value: NERC P01 URI for the variable (e.g., longitude/latitude terms)
-
-### Human-readable descriptions (recommended)
-
-If a column needs a human-facing explanation, use:
-
-- `PropertyValue.description`
-
-This profile discourages inventing additional ad-hoc “comment” properties when `description` is sufficient.
+```json
+{
+  "@type": "PropertyValue",
+  "name": "Lon",
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "targetColumn",
+      "value": "Longitude [degrees_east]"
+    }
+  ]
+}
+```
 
 ---
 
-## Processing Model (Informative)
+## Optional Column Metadata
 
-A conforming generator performs the following steps:
+Columns MAY define:
 
-1. Parse JSON-LD and locate the `Dataset`
-2. Retrieve the source file via `distribution.contentUrl`
-3. Apply dataset-level parsing hints:
-   - `columnSeparator` (if provided)
-   - `fillValue` (if provided)
-4. Build an ordered output column list based on `targetColumn` mappings and converter defaults
-5. Map source fields to output fields using `variableMeasured`:
-   - For each source column `name`, write to its `targetColumn`
-6. Apply converter rules for derived/created fields not present in the source (implementation-specific)
-7. Emit a valid ODV Generic Spreadsheet
+### dataType
+
+Allowed values:
+
+- Text
+- Number
+- DateTime
+
+### role
+
+Allowed values:
+
+- meta
+- data
+
+### P01
+
+A NERC P01 vocabulary URI describing the parameter.
+
+Example:
+
+```json
+{
+  "name": "P01",
+  "value": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/"
+}
+```
 
 ---
 
-## Validation and Conformance
+## Processing Model
 
-Conformance requires:
+A converter SHOULD:
 
-- Valid JSON syntax
-- Presence of all required schema.org terms above
-- Deterministic mappings via `variableMeasured` and `additionalProperty(targetColumn)`
-
-Validation should occur **prior to data conversion**.
+1. Validate JSON-LD against the ODIS2ODV JSON Schema
+2. Read the source file from `distribution.contentUrl`
+3. Apply dataset parsing hints
+4. Extract source-to-target mappings from `variableMeasured`
+5. Rename/reorder columns
+6. Apply ODV-specific requirements
+7. Emit an ODV Generic Spreadsheet
 
 ---
 
-## Example
+## Validation
 
-A complete example conforming to this profile is expected to include:
+Validation requires:
 
-- `@id`, `identifier`
-- `distribution.contentUrl`
-- dataset-level `additionalProperty` (e.g., `primaryVariableTargetColumn`, `columnSeparator`, `fillValue`)
-- `variableMeasured` mappings from source columns to ODV output columns
+- valid JSON syntax
+- JSON Schema Draft 2020-12 validation
+- presence of required schema.org metadata
+- deterministic column mappings
+
+Recommended command:
+
+```bash
+./jsonValidate.bash
+```
+
+---
+
+## Repository Components
+
+- `schema/odv-odis2odv.schema.json`  
+  Machine-readable JSON Schema
+
+- `profile/odis-profile-odv-generic-spreadsheet.md`  
+  Human-readable ODIS profile
+
+- `examples/`  
+  Valid example datasets
+
+- `tools/`  
+  Validation and conversion utilities
 
 ---
 
 ## Extensibility
 
-The profile may be extended to support:
+Future extensions may support:
 
-- Quality flag columns
-- Multiple source files
-- Unit conversion rules
-- Additional input formats (e.g. NetCDF)
+- quality flags
+- multiple source files
+- unit conversion
+- additional source formats
 
-Extensions MUST NOT change the semantics of existing terms.
+Extensions MUST preserve existing semantics.
 
 ---
 
@@ -207,9 +309,7 @@ Extensions MUST NOT change the semantics of existing terms.
 This profile enables:
 
 - ODIS-compatible dataset publication
-- Deterministic generation of ODV Generic Spreadsheets
-- Clear separation of discovery metadata and mapping metadata
-- Reuse across providers and tooling
-
-It provides a practical bridge between **web-based metadata publication** and **ODV-based ocean data analysis**.
-
+- schema.org-only metadata
+- reproducible ODV Generic Spreadsheet generation
+- clear separation between discovery metadata, ODV metadata,
+  and conversion rules
