@@ -48,18 +48,18 @@ No custom vocabularies are required.
 
 ## Repository Contents
 
-├── examples
-│   ├── ocean-data-test-003.json
-│   └── ocean-data-test-003.txt
-├── profile
-│   └── odis-profile-odv-generic-spreadsheet.md
-├── schema
-│   └── odv-odis2odv.schema.json
-├── tools
-│   └── jsonValidate.py
-├── jsonValidate.bash
-├── requirements.txt
-└── README.md
+├── examples  
+│   ├── ocean-data-test-003.json  
+│   └── ocean-data-test-003.txt  
+├── profile  
+│   └── odis-profile-odv-generic-spreadsheet.md  
+├── schema  
+│   └── odv-odis2odv.schema.json  
+├── tools  
+│   └── jsonValidate.py  
+├── jsonValidate.bash  
+├── requirements.txt  
+└── README.md  
 
 
 ---
