@@ -1,0 +1,2 @@
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
