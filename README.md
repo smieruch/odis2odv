@@ -48,14 +48,18 @@ No custom vocabularies are required.
 
 ## Repository Contents
 
-├── examples  
-│   ├── ocean-data-test-003.json  
-│   └── ocean-data-test-003.txt  
-├── profile  
-│   └── odis-profile-odv-generic-spreadsheet.md  
-├── schema  
-│   └── odv-odis2odv.schema.json  
-└── README.md  
+├── examples
+│   ├── ocean-data-test-003.json
+│   └── ocean-data-test-003.txt
+├── profile
+│   └── odis-profile-odv-generic-spreadsheet.md
+├── schema
+│   └── odv-odis2odv.schema.json
+├── tools
+│   └── jsonValidate.py
+├── jsonValidate.bash
+├── requirements.txt
+└── README.md
 
 
 ---
@@ -73,6 +77,18 @@ Minimal, working JSON-LD examples that:
 
 - pass schema validation,
 - can drive an ODV Generic Spreadsheet generator.
+
+---
+
+## Dataset-level ODV Metadata
+
+ODV collection information is stored using schema.org `additionalProperty`:
+
+- `DataField` → ODV domain (for example `Ocean`)
+- `DataType` → ODV collection type (for example `Profiles`, `TimeSeries`)
+- `primaryVariableTargetColumn` → primary ODV variable
+- `columnSeparator` → source table separator
+- `fillValue` → missing-value representation
 
 ---
 
@@ -115,21 +131,40 @@ Example:
 Before conversion, metadata files SHOULD be validated:
 
 1. **JSON syntax**
-2. **JSON Schema validation**
+2. **JSON Schema Draft 2020-12 validation**
 3. *(Optional)* JSON-LD expansion sanity check
 
-Example (Python):
+Create a Python environment:
 
-```python
-import json
-from jsonschema import validate
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 
-schema = json.load(open("schema/odv-odis2odv.schema.json"))
-instance = json.load(open("examples/ocean-data-test-003.json"))
-
-validate(instance=instance, schema=schema)
-print("Metadata is valid")
+pip install -r requirements.txt
 ```
+
+Validate the example metadata:
+
+```bash
+./jsonValidate.bash
+```
+
+or directly:
+
+```bash
+python3 tools/jsonValidate.py \
+  schema/odv-odis2odv.schema.json \
+  examples/ocean-data-test-003.json
+```
+
+A successful validation prints:
+
+```text
+Valid!
+```
+
+The schema validates the ODIS2ODV mapping description before conversion into an
+ODV Generic Spreadsheet.
 
 ## License
 
