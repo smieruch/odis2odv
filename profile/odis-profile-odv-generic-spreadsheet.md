@@ -123,8 +123,16 @@ The following ODV metadata columns are strongly recommended but not mandatory:
 The ODV time column is not mandatory,
 because ODV can handle datasets without timestamps.
 
-The ODV `Type` column is optional. If present, it is metadata text and may contain
-ODV sample-type values such as `C` for CTD and `B` for bottle measurements.
+The ODV `Type` column is optional.
+
+If present, `Type` is interpreted as metadata text.
+
+Allowed source data values are:
+
+- `C` = CTD measurement
+- `B` = bottle measurement
+
+The converter SHOULD validate that no other values occur.
 
 ---
 
@@ -375,6 +383,13 @@ The following target column is optional:
 
 - `Type`
 
+For `targetColumn = Type`, allowed source data values are:
+
+- `C` = CTD measurement
+- `B` = bottle measurement
+
+The converter SHOULD validate these values during data conversion.
+
 For known ODV metadata target columns such as `Cruise`, `Station`,
 `Longitude [degrees_east]`, `Latitude [degrees_north]`,
 `yyyy-mm-ddThh:mm:ss.sss`, and `Type`, converters may infer `role = meta`
@@ -535,6 +550,31 @@ SHOULD use the direct mapping and do not need time-component assembly.
 
 Auxiliary columns do not require `targetColumn` because their relationship to the
 measured variable is expressed through `relatedColumn`.
+
+---
+
+
+## Metadata Validation vs Data Validation
+
+The JSON Schema validates the JSON-LD mapping metadata.
+
+It can validate values that are present in the JSON-LD document, for example:
+
+- `DataField`
+- `DataType`
+- `role`
+- `qualityFlagScheme`
+- `dateTimeComponent`
+- `targetColumn`
+
+It cannot validate values that occur only in the source data table, for example:
+
+- `Type` column values (`C` or `B`)
+- longitude and latitude numeric ranges
+- timestamp component formats
+- quality flag values
+
+These checks are part of converter-level data validation.
 
 ---
 
