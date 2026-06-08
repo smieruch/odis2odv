@@ -143,12 +143,15 @@ JSON-LD files for the Hawaii Ocean Time-Series data hosted at BCO-DMO.
 ODV collection information is stored using schema.org
 `additionalProperty`:
 
--   `DataField` → ODV domain (for example `Ocean`)
--   `DataType` → ODV collection type (for example `Profiles`,
-    `TimeSeries`)
+-   `DataField` → ODV domain. Supported values: `GeneralField`, `Ocean`,
+    `Atmosphere`, `Land`, `IceSheet`, `SeaIce`, `Sediment`
+-   `DataType` → ODV collection type. Supported values: `GeneralType`,
+    `Profiles`, `TimeSeries`, `Trajectories`
 -   `primaryVariableTargetColumn` → primary ODV variable
 -   `columnSeparator` → source table separator
 -   `fillValue` → missing-value representation
+-   `timeZone` → optional time zone used when assembling timestamps from
+    separate source columns
 
 ------------------------------------------------------------------------
 
@@ -261,8 +264,10 @@ ODV-specific collection information is added through
 
 Common ODIS2ODV properties are:
 
--   `DataField`
--   `DataType`
+-   `DataField` with supported values: `GeneralField`, `Ocean`,
+    `Atmosphere`, `Land`, `IceSheet`, `SeaIce`, `Sediment`
+-   `DataType` with supported values: `GeneralType`, `Profiles`,
+    `TimeSeries`, `Trajectories`
 -   `primaryVariableTargetColumn`
 -   `columnSeparator`
 -   `fillValue`
@@ -309,7 +314,8 @@ Rules:
 ### 4. Describe auxiliary variables
 
 Some columns do not become independent ODV variables but provide
-additional information for another column.
+additional information for another column. Timestamp component columns
+are handled separately using `role = timeComponent`.
 
 #### Quality flags
 
@@ -367,6 +373,60 @@ The converter only uses the information contained in the JSON-LD and
 does not rely on provider-specific APIs or conventions.
 
 ------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## Timestamp assembly from separate columns
+
+A provider does not need to supply a single ISO 8601 timestamp column.
+
+If the source table contains separate columns such as `Year`, `Month`,
+`Day`, `Hour`, `Minute`, or `Second`, ODIS2ODV can describe how the
+converter should assemble the optional ODV timestamp column:
+
+`yyyy-mm-ddThh:mm:ss.sss`
+
+Example:
+
+``` json
+{
+  "@type": "PropertyValue",
+  "name": "Year",
+  "description": "Year component of the observation date.",
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "role",
+      "value": "timeComponent"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "dateTimeComponent",
+      "value": "year"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "targetColumn",
+      "value": "yyyy-mm-ddThh:mm:ss.sss"
+    }
+  ]
+}
+```
+
+Allowed `dateTimeComponent` values are:
+
+-   `year`
+-   `month`
+-   `day`
+-   `hour`
+-   `minute`
+-   `second`
+-   `millisecond`
+-   `date`
+-   `time`
+
+If needed, `Dataset.additionalProperty` may define a `timeZone`, for
+example `UTC`.
 
 ## Validation Workflow
 

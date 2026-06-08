@@ -86,7 +86,7 @@
       }
     },
     "additionalProperty": {
-      "description": "Dataset-level ODV collection metadata and conversion hints. Required entries: DataField, DataType, primaryVariableTargetColumn, and columnSeparator. fillValue is optional.",
+      "description": "Dataset-level ODV collection metadata and conversion hints. Required entries: DataField, DataType, primaryVariableTargetColumn, and columnSeparator. DataField and DataType must use supported ODV controlled values. fillValue and timeZone are optional.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/DatasetAdditionalProperty"
@@ -168,7 +168,7 @@
       ]
     },
     "variableMeasured": {
-      "description": "Column mapping list. Required ODV core target columns: Longitude [degrees_east] and Latitude [degrees_north]. Cruise, Station, and yyyy-mm-ddThh:mm:ss.sss are strongly recommended but optional. Type is optional.",
+      "description": "Column mapping list. Required ODV core target columns: Longitude [degrees_east] and Latitude [degrees_north]. Cruise, Station, and yyyy-mm-ddThh:mm:ss.sss are strongly recommended but optional. The ODV timestamp may be mapped directly or assembled from role=timeComponent columns. Type is optional.",
       "type": "array",
       "minItems": 1,
       "items": {
@@ -312,7 +312,8 @@
             "DataType",
             "primaryVariableTargetColumn",
             "columnSeparator",
-            "fillValue"
+            "fillValue",
+            "timeZone"
           ]
         },
         "value": {
@@ -351,10 +352,15 @@
               "value": {
                 "type": "string",
                 "enum": [
+                  "GeneralField",
                   "Ocean",
                   "Atmosphere",
-                  "Land"
-                ]
+                  "Land",
+                  "IceSheet",
+                  "SeaIce",
+                  "Sediment"
+                ],
+                "description": "ODV DataField value. Supported ODV values are GeneralField, Ocean, Atmosphere, Land, IceSheet, SeaIce, and Sediment."
               }
             },
             "required": [
@@ -378,10 +384,12 @@
               "value": {
                 "type": "string",
                 "enum": [
+                  "GeneralType",
                   "Profiles",
                   "TimeSeries",
                   "Trajectories"
-                ]
+                ],
+                "description": "ODV DataType value. Supported ODV values are GeneralType, Profiles, TimeSeries, and Trajectories."
               }
             },
             "required": [
@@ -468,6 +476,30 @@
               "value"
             ]
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "timeZone"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "description": "Time zone used when assembling ODV timestamps from separate time components. Prefer IANA time zone names or UTC.",
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
         }
       ]
     },
@@ -493,7 +525,7 @@
           "type": "string"
         },
         "additionalProperty": {
-          "description": "Per-column mapping metadata. Columns with role 'data' or 'meta' require targetColumn. Auxiliary columns with role 'quality' or 'error' require relatedColumn and do not require targetColumn.",
+          "description": "Per-column mapping metadata. Columns with role 'data' or 'meta' require targetColumn. Auxiliary columns with role 'quality' or 'error' require relatedColumn and do not require targetColumn. Columns with role 'timeComponent' are used to assemble the optional ODV timestamp column yyyy-mm-ddThh:mm:ss.sss.",
           "type": "array",
           "minItems": 1,
           "items": {
@@ -639,6 +671,74 @@
                   }
                 }
               }
+            },
+            {
+              "if": {
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "@type",
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "@type": {
+                      "const": "PropertyValue"
+                    },
+                    "name": {
+                      "const": "role"
+                    },
+                    "value": {
+                      "enum": [
+                        "timeComponent"
+                      ]
+                    }
+                  }
+                }
+              },
+              "then": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "type": "object",
+                      "required": [
+                        "@type",
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "@type": {
+                          "const": "PropertyValue"
+                        },
+                        "name": {
+                          "const": "targetColumn"
+                        },
+                        "value": {
+                          "const": "yyyy-mm-ddThh:mm:ss.sss"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "contains": {
+                      "type": "object",
+                      "required": [
+                        "@type",
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "@type": {
+                          "const": "PropertyValue"
+                        },
+                        "name": {
+                          "const": "dateTimeComponent"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
             }
           ]
         },
@@ -651,7 +751,7 @@
       "additionalProperties": true
     },
     "ColumnAdditionalProperty": {
-      "description": "Per-column metadata expressed as schema.org PropertyValue. Use native PropertyValue.propertyID for persistent semantic identifiers such as NERC P01 URIs.",
+      "description": "Per-column metadata expressed as schema.org PropertyValue. Use native PropertyValue.propertyID for persistent semantic identifiers such as NERC P01 URIs. ODIS2ODV profile values include targetColumn, role, qualityFlagScheme, relatedColumn, and dateTimeComponent.",
       "type": "object",
       "required": [
         "@type",
@@ -669,7 +769,8 @@
             "dataType",
             "role",
             "qualityFlagScheme",
-            "relatedColumn"
+            "relatedColumn",
+            "dateTimeComponent"
           ]
         },
         "value": {}
@@ -745,9 +846,10 @@
                   "meta",
                   "data",
                   "quality",
-                  "error"
+                  "error",
+                  "timeComponent"
                 ],
-                "description": "Column role. If omitted for known ODV core target columns such as Cruise, Station, Longitude [degrees_east], Latitude [degrees_north], yyyy-mm-ddThh:mm:ss.sss, or Type, the converter may infer role=meta. Auxiliary columns use role=quality or role=error."
+                "description": "Column role. If omitted for known ODV core target columns such as Cruise, Station, Longitude [degrees_east], Latitude [degrees_north], yyyy-mm-ddThh:mm:ss.sss, or Type, the converter may infer role=meta. Auxiliary columns use role=quality or role=error. Columns used to assemble an ODV timestamp may use role=timeComponent."
               }
             },
             "required": [
@@ -813,6 +915,40 @@
                 "description": "Exact source column name of the measured variable to which this auxiliary column belongs. Used for quality flags, errors, standard deviations, and similar auxiliary variables.",
                 "type": "string",
                 "minLength": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "dateTimeComponent"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "description": "Component of an ODV timestamp assembled from separate source columns.",
+                "type": "string",
+                "enum": [
+                  "year",
+                  "month",
+                  "day",
+                  "hour",
+                  "minute",
+                  "second",
+                  "millisecond",
+                  "date",
+                  "time"
+                ]
               }
             },
             "required": [

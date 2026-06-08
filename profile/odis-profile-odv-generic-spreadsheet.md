@@ -7,7 +7,7 @@ https://creativecommons.org/licenses/by/4.0/
 
 **Profile ID:** odis-profile-odv-generic-spreadsheet  
 **Status:** Draft  
-**Version:** 0.7
+**Version:** 0.9
 
 ---
 
@@ -142,6 +142,16 @@ Each entry is a schema.org `PropertyValue`.
 
 Defines the ODV scientific domain.
 
+Supported ODV values:
+
+- `GeneralField`
+- `Ocean`
+- `Atmosphere`
+- `Land`
+- `IceSheet`
+- `SeaIce`
+- `Sediment`
+
 Example:
 
 ```json
@@ -156,8 +166,9 @@ Example:
 
 Defines the ODV data organization.
 
-Supported values:
+Supported ODV values:
 
+- `GeneralType`
 - `Profiles`
 - `TimeSeries`
 - `Trajectories`
@@ -215,6 +226,14 @@ The following dataset-level entries are required:
 - `DataType`
 - `primaryVariableTargetColumn`
 - `columnSeparator`
+
+The following dataset-level entries are optional:
+
+- `fillValue`
+- `timeZone`
+
+`timeZone` may be used when the ODV timestamp is assembled from separate
+source columns. Prefer `UTC` or an IANA time zone name.
 
 ---
 
@@ -323,6 +342,7 @@ Allowed values:
 - `data`
 - `quality`
 - `error`
+- `timeComponent`
 
 Regular ODV columns use:
 
@@ -381,6 +401,73 @@ It contains an ODV-supported quality flag set name, for example:
 - `PANGAEA`
 
 ---
+
+
+## Timestamp Assembly from Separate Columns
+
+Many provider tables do not contain a single ISO 8601 timestamp column.
+Instead, time information may be stored in separate columns such as:
+
+- `Year`
+- `Month`
+- `Day`
+- `Hour`
+- `Minute`
+- `Second`
+
+or as separate `Date` and `Time` columns.
+
+ODIS2ODV supports this using `role = timeComponent`.
+
+Each time component column SHOULD point to the ODV timestamp target column:
+
+`yyyy-mm-ddThh:mm:ss.sss`
+
+and declare which part of the timestamp it represents using
+`dateTimeComponent`.
+
+Allowed `dateTimeComponent` values:
+
+- `year`
+- `month`
+- `day`
+- `hour`
+- `minute`
+- `second`
+- `millisecond`
+- `date`
+- `time`
+
+Example:
+
+```json
+{
+  "@type": "PropertyValue",
+  "name": "Year",
+  "description": "Year component of the observation date.",
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "role",
+      "value": "timeComponent"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "dateTimeComponent",
+      "value": "year"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "targetColumn",
+      "value": "yyyy-mm-ddThh:mm:ss.sss"
+    }
+  ]
+}
+```
+
+If a direct source column already maps to `yyyy-mm-ddThh:mm:ss.sss`, converters
+SHOULD use the direct mapping and do not need time-component assembly.
+
 
 ## Auxiliary Column Examples
 
@@ -452,10 +539,12 @@ A converter SHOULD:
 4. Extract source-to-target mappings from `variableMeasured`
 5. Map `role = meta` and `role = data` columns to ODV output columns using
    `targetColumn`
-6. Attach auxiliary columns with `role = quality` or `role = error` to their
+6. If needed, assemble `yyyy-mm-ddThh:mm:ss.sss` from `role = timeComponent`
+   columns using `dateTimeComponent`
+7. Attach auxiliary columns with `role = quality` or `role = error` to their
    `relatedColumn`
-7. Apply ODV-specific requirements
-8. Emit an ODV Generic Spreadsheet
+8. Apply ODV-specific requirements
+9. Emit an ODV Generic Spreadsheet
 
 The converter MUST NOT rely on provider-specific APIs, web pages, or hidden
 conventions. Provider-specific enrichment may happen before conversion, but the
