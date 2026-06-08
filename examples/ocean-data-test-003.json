@@ -3,9 +3,9 @@
     "@vocab": "https://schema.org/"
   },
   "@type": "Dataset",
-  "@id": "https://github.com/smieruch/odis2odv/blob/main/examples/ocean-data-test-003.json#odis2odv",
-  "identifier": "https://github.com/smieruch/odis2odv/tree/main/examples/ocean-data-test-003",
-  "url": "https://github.com/smieruch/odis2odv/tree/main/examples"
+  "@id": "https://example.org/odis2odv/dataset/ocean-data-test-003#odis2odv",
+  "identifier": "https://example.org/odis2odv/dataset/ocean-data-test-003",
+  "url": "https://example.org/odis2odv/dataset/ocean-data-test-003",
   "name": "ODIS2ODV example profile dataset",
   "description": "Small tutorial dataset demonstrating how schema.org JSON-LD can describe the deterministic conversion of a tab-separated ocean profile table into an ODV Generic Spreadsheet. The example includes metadata columns, measured data columns, one quality flag column, and one error/standard-deviation column.",
   "keywords": [
@@ -23,7 +23,7 @@
       "name": "ocean-data-test-003.txt",
       "description": "Small tab-separated tutorial source dataset for ODIS2ODV.",
       "encodingFormat": "text/tab-separated-values",
-      "contentUrl": "https://raw.githubusercontent.com/smieruch/odis2odv/main/examples/ocean-data-test-003.txt"
+      "contentUrl": "https://example.org/odis2odv/dataset/ocean-data-test-003.txt"
     }
   ],
   "additionalProperty": [
@@ -64,16 +64,6 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "Cruise"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "dataType",
-          "value": "Text"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "role",
-          "value": "meta"
         }
       ]
     },
@@ -87,16 +77,19 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "Station"
-        },
+        }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Type",
+      "description": "ODV sample type. C indicates CTD measurements, B indicates bottle measurements.",
+      "unitText": "unitless",
+      "additionalProperty": [
         {
           "@type": "PropertyValue",
-          "name": "dataType",
-          "value": "Number"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "role",
-          "value": "meta"
+          "name": "targetColumn",
+          "value": "Type"
         }
       ]
     },
@@ -110,16 +103,6 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "yyyy-mm-ddThh:mm:ss.sss"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "dataType",
-          "value": "DateTime"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "role",
-          "value": "meta"
         }
       ]
     },
@@ -134,16 +117,6 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "Longitude [degrees_east]"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "dataType",
-          "value": "Number"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "role",
-          "value": "meta"
         }
       ]
     },
@@ -158,16 +131,6 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "Latitude [degrees_north]"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "dataType",
-          "value": "Number"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "role",
-          "value": "meta"
         }
       ]
     },
@@ -221,7 +184,7 @@
       "@type": "PropertyValue",
       "name": "Pressure (original) [decibar]",
       "description": "Sea pressure of the profile observation.",
-      "unitText": "decibar",
+      "unitText": "Original source unit is decibar. The ODV target column defines the output unit label dbar.",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/PRESPR01/",
       "additionalProperty": [
         {
@@ -245,7 +208,7 @@
       "@type": "PropertyValue",
       "name": "Temperature (original) [degrees_Celsius]",
       "description": "Sea water temperature.",
-      "unitText": "degrees_Celsius",
+      "unitText": "Original source unit is degrees Celsius. The ODV target column defines the output unit label degC.",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01/",
       "additionalProperty": [
         {
@@ -292,7 +255,7 @@
       "@type": "PropertyValue",
       "name": "Temperature std",
       "description": "Standard deviation of the temperature observation.",
-      "unitText": "degrees_Celsius",
+      "unitText": "Same physical unit as the related temperature variable.",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
@@ -310,7 +273,7 @@
       "@type": "PropertyValue",
       "name": "Practical Salinity (original) [psu]",
       "description": "Practical salinity of the profile observation.",
-      "unitText": "psu",
+      "unitText": "Original source unit is practical salinity units.",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/PSALPR01/",
       "additionalProperty": [
         {

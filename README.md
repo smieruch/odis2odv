@@ -387,3 +387,21 @@ License (CC BY 4.0)**.
 
 Software code (if added) is licensed under the **MIT License**, unless
 stated otherwise.
+
+### Note on units
+
+ODIS2ODV uses `targetColumn` as the authoritative ODV output definition.
+
+Example:
+
+``` json
+{
+  "name": "targetColumn",
+  "value": "Temperature [degC]"
+}
+```
+
+The schema.org property `unitText` is optional. It can be used to
+preserve additional unit information from the source provider, but it is
+not required for conversion and is not used to construct ODV column
+names.
