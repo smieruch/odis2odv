@@ -7,7 +7,7 @@ https://creativecommons.org/licenses/by/4.0/
 
 **Profile ID:** odis-profile-odv-generic-spreadsheet  
 **Status:** Draft  
-**Version:** 0.5
+**Version:** 0.7
 
 ---
 
@@ -111,12 +111,16 @@ A dataset-level `description` is strongly recommended for ODIS discovery.
 
 The following ODV core target-column mappings are mandatory for successful ODV conversion:
 
-- `Cruise`
-- `Station`
 - `Longitude [degrees_east]`
 - `Latitude [degrees_north]`
 
-The ODV time column `yyyy-mm-ddThh:mm:ss.sss` is strongly recommended but not mandatory,
+The following ODV metadata columns are strongly recommended but not mandatory:
+
+- `Cruise`
+- `Station`
+- `yyyy-mm-ddThh:mm:ss.sss`
+
+The ODV time column is not mandatory,
 because ODV can handle datasets without timestamps.
 
 The ODV `Type` column is optional. If present, it is metadata text and may contain
@@ -338,13 +342,13 @@ It defines the ODV output column name.
 
 The following target columns are mandatory:
 
-- `Cruise`
-- `Station`
 - `Longitude [degrees_east]`
 - `Latitude [degrees_north]`
 
-The following target column is strongly recommended but optional:
+The following target columns are strongly recommended but optional:
 
+- `Cruise`
+- `Station`
 - `yyyy-mm-ddThh:mm:ss.sss`
 
 The following target column is optional:

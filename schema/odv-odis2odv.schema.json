@@ -168,87 +168,13 @@
       ]
     },
     "variableMeasured": {
-      "description": "Column mapping list. Each item describes one source column and its target output column or auxiliary-column relation. Required ODV core target columns: Cruise, Station, Longitude [degrees_east], and Latitude [degrees_north]. The ODV time column yyyy-mm-ddThh:mm:ss.sss is strongly recommended but not required. The ODV Type column is optional.",
+      "description": "Column mapping list. Required ODV core target columns: Longitude [degrees_east] and Latitude [degrees_north]. Cruise, Station, and yyyy-mm-ddThh:mm:ss.sss are strongly recommended but optional. Type is optional.",
       "type": "array",
       "minItems": 1,
       "items": {
         "$ref": "#/$defs/ColumnMapping"
       },
       "allOf": [
-        {
-          "contains": {
-            "type": "object",
-            "required": [
-              "@type",
-              "name",
-              "additionalProperty"
-            ],
-            "properties": {
-              "@type": {
-                "const": "PropertyValue"
-              },
-              "additionalProperty": {
-                "type": "array",
-                "contains": {
-                  "type": "object",
-                  "required": [
-                    "@type",
-                    "name",
-                    "value"
-                  ],
-                  "properties": {
-                    "@type": {
-                      "const": "PropertyValue"
-                    },
-                    "name": {
-                      "const": "targetColumn"
-                    },
-                    "value": {
-                      "const": "Cruise"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "contains": {
-            "type": "object",
-            "required": [
-              "@type",
-              "name",
-              "additionalProperty"
-            ],
-            "properties": {
-              "@type": {
-                "const": "PropertyValue"
-              },
-              "additionalProperty": {
-                "type": "array",
-                "contains": {
-                  "type": "object",
-                  "required": [
-                    "@type",
-                    "name",
-                    "value"
-                  ],
-                  "properties": {
-                    "@type": {
-                      "const": "PropertyValue"
-                    },
-                    "name": {
-                      "const": "targetColumn"
-                    },
-                    "value": {
-                      "const": "Station"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
         {
           "contains": {
             "type": "object",
@@ -765,7 +691,7 @@
               "value": {
                 "type": "string",
                 "minLength": 1,
-                "description": "ODV output column name. Required ODV core target columns are Cruise, Station, Longitude [degrees_east], and Latitude [degrees_north]. The time target column yyyy-mm-ddThh:mm:ss.sss is strongly recommended but optional. The ODV Type column is optional and may contain values such as C for CTD and B for bottle measurements."
+                "description": "ODV output column name. Required ODV core target columns are Longitude [degrees_east] and Latitude [degrees_north]. Cruise and Station are strongly recommended. The time target column yyyy-mm-ddThh:mm:ss.sss is strongly recommended but optional. The ODV Type column is optional and may contain values such as C for CTD and B for bottle measurements."
               }
             },
             "required": [
