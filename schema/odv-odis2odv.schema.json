@@ -936,7 +936,7 @@
           "then": {
             "properties": {
               "value": {
-                "description": "Component of an ODV timestamp assembled from separate source columns.",
+                "description": "Component of an ODV timestamp assembled from separate source columns. Supported date source formats: yyyy-mm-dd, yyyy-mm. Supported time source formats: hh:mm:ss.sss, hh:mm:ss, hh:mm.",
                 "type": "string",
                 "enum": [
                   "year",

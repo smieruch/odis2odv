@@ -62,36 +62,56 @@ ODIS2ODV separates FAIR discovery metadata from deterministic conversion
 instructions.
 
 ``` text
-schema.org layer
+ODIS / schema.org discovery layer
 │
 ├── Dataset
 ├── DataDownload
 ├── variableMeasured
-├── PropertyValue
 ├── description
-├── unitText (optional source/provider unit information)
-└── propertyID
-        ↑
-        |
-        FAIR / ODIS discovery
+├── unitText        (optional source/provider unit notes)
+└── propertyID     (semantic identifier, e.g. NERC P01)
+        │
+        ↓
+FAIR discovery
 
---------------------------------
 
-ODIS2ODV profile layer
-inside PropertyValue.name/value
+ODIS2ODV conversion profile
+inside PropertyValue
+│
+├── DataField
+│     ├── GeneralField
+│     ├── Ocean
+│     ├── Atmosphere
+│     ├── Land
+│     ├── IceSheet
+│     ├── SeaIce
+│     └── Sediment
+│
+├── DataType
+│     ├── GeneralType
+│     ├── Profiles
+│     ├── TimeSeries
+│     └── Trajectories
 │
 ├── targetColumn
-├── role
-├── relatedColumn
-├── qualityFlagScheme
-├── DataField
-├── DataType
 ├── primaryVariableTargetColumn
 ├── columnSeparator
-└── fillValue
-        ↑
-        |
-        deterministic ODV conversion
+├── fillValue
+│
+├── role
+│     ├── meta
+│     ├── data
+│     ├── quality
+│     ├── error
+│     └── timeComponent
+│
+├── relatedColumn
+├── qualityFlagScheme
+├── dateTimeComponent
+└── timeZone
+        │
+        ↓
+deterministic ODV conversion
 ```
 
 The JSON Schema does not define a new vocabulary. It defines the allowed
@@ -196,26 +216,35 @@ Example:
 
 The following ODV target columns are mandatory for ODIS2ODV conversion:
 
--   `Cruise`
--   `Station`
--   `Longitude [degrees_east]`
--   `Latitude [degrees_north]`
+- `Longitude [degrees_east]`
+- `Latitude [degrees_north]`
 
-For these known ODV metadata columns, converters infer the role and
-datatype.
+The following ODV target columns are strongly recommended but optional:
 
-The following ODV target column is strongly recommended but optional:
-
--   `yyyy-mm-ddThh:mm:ss.sss`
-
-ODV can also handle datasets without timestamps.
+- `Cruise`
+- `Station`
+- `yyyy-mm-ddThh:mm:ss.sss`
+  (directly mapped or assembled from `dateTimeComponent` columns, see below) 
 
 The following ODV metadata column is optional:
 
--   `Type`
+- `Type`
+
+For the known ODV metadata columns:
+
+- `Cruise`
+- `Station`
+- `Longitude [degrees_east]`
+- `Latitude [degrees_north]`
+- `yyyy-mm-ddThh:mm:ss.sss`
+- `Type`
+
+converters infer the role and datatype. Therefore these properties do not
+need to be explicitly provided in the JSON-LD.
 
 If present, `Type` is interpreted as metadata text (for example `C` for
 CTD measurements or `B` for bottle measurements).
+
 
 ## Enriching an existing ODIS JSON-LD for ODV compatibility
 
@@ -271,6 +300,7 @@ Common ODIS2ODV properties are:
 -   `primaryVariableTargetColumn`
 -   `columnSeparator`
 -   `fillValue`
+-   `timeZone` (optional, for timestamp assembly)
 
 ### 3. Add mappings for measured variables
 
@@ -415,18 +445,28 @@ Example:
 
 Allowed `dateTimeComponent` values are:
 
--   `year`
--   `month`
--   `day`
--   `hour`
--   `minute`
--   `second`
--   `millisecond`
--   `date`
--   `time`
+- `year`
+- `month`
+- `day`
+- `hour`
+- `minute`
+- `second`
+- `millisecond`
+- `date`
+- `time`
 
-If needed, `Dataset.additionalProperty` may define a `timeZone`, for
-example `UTC`.
+For combined date or time components, the following formats are supported:
+
+- `date`
+  - `yyyy-mm-dd`
+  - `yyyy-mm`
+
+- `time`
+  - `hh:mm:ss.sss`
+  - `hh:mm:ss`
+  - `hh:mm`
+
+If needed, `Dataset.additionalProperty` may define a `timeZone`, for example `UTC`.
 
 ## Validation Workflow
 

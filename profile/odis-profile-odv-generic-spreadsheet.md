@@ -6,8 +6,8 @@ https://creativecommons.org/licenses/by/4.0/
 # ODIS Profile: ODV Generic Spreadsheet Mapping
 
 **Profile ID:** odis-profile-odv-generic-spreadsheet  
-**Status:** Draft  
-**Version:** 0.9
+**Status:** Stable  
+**Version:** 1.0
 
 ---
 
@@ -437,6 +437,17 @@ Allowed `dateTimeComponent` values:
 - `millisecond`
 - `date`
 - `time`
+
+When `dateTimeComponent = date`, supported source-column formats are:
+
+- `yyyy-mm-dd`
+- `yyyy-mm`
+
+When `dateTimeComponent = time`, supported source-column formats are:
+
+- `hh:mm:ss.sss`
+- `hh:mm:ss`
+- `hh:mm`
 
 Example:
 
