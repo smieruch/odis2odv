@@ -1,6 +1,6 @@
 # ODIS → ODV Generic Spreadsheet Profile
 
-This repository defines an **ODIS-compatible, schema.org-only profile**
+This repository defines an **ODIS-compatible, schema.org-based profile**
 for the **automatic generation of ODV Generic Spreadsheets** from
 provider-supplied tabular ocean data (CSV / TSV).
 
@@ -69,7 +69,7 @@ schema.org layer
 ├── variableMeasured
 ├── PropertyValue
 ├── description
-├── unitText
+├── unitText (optional source/provider unit information)
 └── propertyID
         ↑
         |
@@ -187,6 +187,33 @@ Example:
 
 ------------------------------------------------------------------------
 
+------------------------------------------------------------------------
+
+## Required and optional ODV core columns
+
+The following ODV target columns are mandatory for ODIS2ODV conversion:
+
+-   `Cruise`
+-   `Station`
+-   `Longitude [degrees_east]`
+-   `Latitude [degrees_north]`
+
+For these known ODV metadata columns, converters infer the role and
+datatype.
+
+The following ODV target column is strongly recommended but optional:
+
+-   `yyyy-mm-ddThh:mm:ss.sss`
+
+ODV can also handle datasets without timestamps.
+
+The following ODV metadata column is optional:
+
+-   `Type`
+
+If present, `Type` is interpreted as metadata text (for example `C` for
+CTD measurements or `B` for bottle measurements).
+
 ## Enriching an existing ODIS JSON-LD for ODV compatibility
 
 Many data providers already publish an ODIS-compatible
@@ -251,7 +278,7 @@ Example:
   "@type": "PropertyValue",
   "name": "Temperature",
   "description": "Sea water temperature",
-  "unitText": "degree Celsius",
+  "unitText": "Original provider unit information: degree Celsius.",
   "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01/",
   "additionalProperty": [
     {
@@ -271,9 +298,11 @@ Example:
 Rules:
 
 -   `name` is always the exact source column name
--   `targetColumn` defines the ODV output column
+-   `targetColumn` defines the ODV output column including the ODV unit
+    label (for example `Temperature [degC]`)
 -   `description` contains human-readable explanations
--   `unitText` contains the original unit information
+-   `unitText` is optional and may contain additional source/provider
+    unit information. It is not used for ODV column generation.
 -   `propertyID` SHOULD contain persistent semantic identifiers (for
     example NERC vocabulary URIs)
 
@@ -379,15 +408,6 @@ Valid!
 The schema validates the ODIS2ODV mapping description before conversion
 into an ODV Generic Spreadsheet.
 
-## License
-
-Documentation, specifications, schemas, and examples in this repository
-are licensed under the **Creative Commons Attribution 4.0 International
-License (CC BY 4.0)**.
-
-Software code (if added) is licensed under the **MIT License**, unless
-stated otherwise.
-
 ### Note on units
 
 ODIS2ODV uses `targetColumn` as the authoritative ODV output definition.
@@ -402,6 +422,16 @@ Example:
 ```
 
 The schema.org property `unitText` is optional. It can be used to
-preserve additional unit information from the source provider, but it is
-not required for conversion and is not used to construct ODV column
-names.
+preserve additional source/provider unit information, but it is not
+required for conversion and is not used to construct ODV column names.
+
+------------------------------------------------------------------------
+
+## License
+
+Documentation, specifications, schemas, and examples in this repository
+are licensed under the **Creative Commons Attribution 4.0 International
+License (CC BY 4.0)**.
+
+Software code (if added) is licensed under the **MIT License**, unless
+stated otherwise.
