@@ -321,7 +321,7 @@
       ]
     },
     "ColumnMapping": {
-      "description": "One mapping item for one source column.",
+      "description": "One mapping item for one source column. Data and metadata columns map to an ODV target column. Auxiliary columns such as quality flags and errors may instead refer to a related measured column.",
       "type": "object",
       "required": [
         "@type",
@@ -338,11 +338,11 @@
           "minLength": 1
         },
         "description": {
-          "description": "Optional human-readable description of the source/target meaning.",
+          "description": "Optional schema.org description of the measured variable. Use this field for human-readable parameter definitions, explanations, method notes, or provider comments. This is the preferred place for variable descriptions instead of creating custom additionalProperty entries such as 'comment'.",
           "type": "string"
         },
         "additionalProperty": {
-          "description": "Per-column mapping metadata (must include targetColumn).",
+          "description": "Per-column mapping metadata. Columns with role 'data' or 'meta' require targetColumn. Auxiliary columns with role 'quality' or 'error' require relatedColumn and do not require targetColumn.",
           "type": "array",
           "minItems": 1,
           "items": {
@@ -350,34 +350,157 @@
           },
           "allOf": [
             {
-              "contains": {
-                "type": "object",
-                "required": [
-                  "@type",
-                  "name",
-                  "value"
-                ],
-                "properties": {
-                  "@type": {
-                    "const": "PropertyValue"
-                  },
-                  "name": {
-                    "const": "targetColumn"
-                  },
-                  "value": {
-                    "type": "string",
-                    "minLength": 1
+              "if": {
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "@type",
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "@type": {
+                      "const": "PropertyValue"
+                    },
+                    "name": {
+                      "const": "role"
+                    },
+                    "value": {
+                      "enum": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  }
+                }
+              },
+              "then": {
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "@type",
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "@type": {
+                      "const": "PropertyValue"
+                    },
+                    "name": {
+                      "const": "targetColumn"
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "@type",
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "@type": {
+                      "const": "PropertyValue"
+                    },
+                    "name": {
+                      "const": "role"
+                    },
+                    "value": {
+                      "enum": [
+                        "quality",
+                        "error"
+                      ]
+                    }
+                  }
+                }
+              },
+              "then": {
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "@type",
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "@type": {
+                      "const": "PropertyValue"
+                    },
+                    "name": {
+                      "const": "relatedColumn"
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "not": {
+                  "contains": {
+                    "type": "object",
+                    "required": [
+                      "@type",
+                      "name",
+                      "value"
+                    ],
+                    "properties": {
+                      "@type": {
+                        "const": "PropertyValue"
+                      },
+                      "name": {
+                        "const": "role"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "@type",
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "@type": {
+                      "const": "PropertyValue"
+                    },
+                    "name": {
+                      "const": "targetColumn"
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
+                    }
                   }
                 }
               }
             }
           ]
+        },
+        "propertyID": {
+          "description": "Optional schema.org propertyID for a persistent semantic identifier of the measured variable or property. Prefer resolvable vocabulary URIs, for example NERC P01 URIs. Do not use this field for free-text comments; use description for human-readable explanations.",
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": true
     },
     "ColumnAdditionalProperty": {
-      "description": "Per-column metadata expressed as schema.org PropertyValue.",
+      "description": "Per-column metadata expressed as schema.org PropertyValue. Use native PropertyValue.propertyID for persistent semantic identifiers such as NERC P01 URIs.",
       "type": "object",
       "required": [
         "@type",
@@ -392,9 +515,10 @@
           "type": "string",
           "enum": [
             "targetColumn",
-            "P01",
             "dataType",
-            "role"
+            "role",
+            "qualityFlagScheme",
+            "relatedColumn"
           ]
         },
         "value": {}
@@ -416,29 +540,6 @@
               "value": {
                 "type": "string",
                 "minLength": 1
-              }
-            },
-            "required": [
-              "value"
-            ]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "name": {
-                "const": "P01"
-              }
-            },
-            "required": [
-              "name"
-            ]
-          },
-          "then": {
-            "properties": {
-              "value": {
-                "type": "string",
-                "pattern": "^https?://.+$"
               }
             },
             "required": [
@@ -490,8 +591,75 @@
                 "type": "string",
                 "enum": [
                   "meta",
-                  "data"
+                  "data",
+                  "quality",
+                  "error"
                 ]
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "qualityFlagScheme"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "enum": [
+                  "ODV",
+                  "GTSPP",
+                  "ARGO",
+                  "SEADATANET",
+                  "ESEAS",
+                  "WOD",
+                  "WODSTATION",
+                  "WOCEBOTTLE",
+                  "WOCECTD",
+                  "WOCESAMPLE",
+                  "QARTOD",
+                  "BODC",
+                  "PANGAEA",
+                  "SMHI",
+                  "OCEANSITES",
+                  "IODE"
+                ],
+                "description": "ODV quality flag set name (QFSetName) defining the interpretation of quality flag values."
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "relatedColumn"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "description": "Exact source column name of the measured variable to which this auxiliary column belongs. Used for quality flags, errors, standard deviations, and similar auxiliary variables.",
+                "type": "string",
+                "minLength": 1
               }
             },
             "required": [

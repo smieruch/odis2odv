@@ -1,16 +1,29 @@
 {
-  "@context": { "@vocab": "https://schema.org/" },
+  "@context": {
+    "@vocab": "https://schema.org/"
+  },
   "@type": "Dataset",
-  "@id": "https://example.org/dataset/ocean-data-test-003.json",
-  "identifier": "https://example.org/dataset/ocean-data-test-003.html", 
-  "name": "Provider → ODV Generic Spreadsheet column mapping",
-  "description": "Schema.org-only column mapping from provider TSV to ODV Generic Spreadsheet. Each PropertyValue in variableMeasured represents one original source column (PropertyValue.name). The output column name is given by additionalProperty with name='targetColumn'. additionalProperty name='dataType' uses schema.org datatypes as simple strings (Text, Number, DateTime) where needed. additionalProperty name='role' distinguishes metadata ('meta') from measured variables ('data') where applicable. Longitude and latitude are mandatory for all datasets; records without geographic coordinates cannot be converted to an ODV Generic Spreadsheet. The primary variable (ODV primary axis) is defined once at dataset level via additionalProperty name='primaryVariableTargetColumn'. P01 and description are optional.",
-    "keywords": "METS, time-series, ODV-compatible, ocean data",
+  "@id": "https://github.com/smieruch/odis2odv/blob/main/examples/ocean-data-test-003.json#odis2odv",
+  "identifier": "https://github.com/smieruch/odis2odv/tree/main/examples/ocean-data-test-003",
+  "url": "https://github.com/smieruch/odis2odv/tree/main/examples"
+  "name": "ODIS2ODV example profile dataset",
+  "description": "Small tutorial dataset demonstrating how schema.org JSON-LD can describe the deterministic conversion of a tab-separated ocean profile table into an ODV Generic Spreadsheet. The example includes metadata columns, measured data columns, one quality flag column, and one error/standard-deviation column.",
+  "keywords": [
+    "ODIS2ODV",
+    "ODV-compatible",
+    "schema.org",
+    "JSON-LD",
+    "ocean profile",
+    "tutorial"
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
   "distribution": [
     {
       "@type": "DataDownload",
+      "name": "ocean-data-test-003.txt",
+      "description": "Small tab-separated tutorial source dataset for ODIS2ODV.",
       "encodingFormat": "text/tab-separated-values",
-      "contentUrl": "https://example.org/dataset/ocean-data-test-003.txt"
+      "contentUrl": "https://raw.githubusercontent.com/smieruch/odis2odv/main/examples/ocean-data-test-003.txt"
     }
   ],
   "additionalProperty": [
@@ -27,7 +40,7 @@
     {
       "@type": "PropertyValue",
       "name": "primaryVariableTargetColumn",
-      "value": "Pressure (original) [decibar]"
+      "value": "Pressure [dbar]"
     },
     {
       "@type": "PropertyValue",
@@ -37,92 +50,284 @@
     {
       "@type": "PropertyValue",
       "name": "fillValue",
-      "value": ""
-    }      
+      "value": null
+    }
   ],
   "variableMeasured": [
     {
       "@type": "PropertyValue",
       "name": "Float ID",
-      "description": "The name or code of a cruise or other activity during which data was collected.",
+      "description": "Argo float identifier used as the ODV cruise/platform identifier.",
+      "unitText": "unitless",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Cruise" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Cruise"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Text"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "Profile Number",
-      "description": "An ODV Station, e.g. a profile or time series is constant in time and longitute/latitude",
+      "description": "Profile number used as the ODV station identifier.",
+      "unitText": "unitless",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Station" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Station"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "datetime",
+      "description": "Profile date and time in ISO 8601 format.",
+      "unitText": "unitless",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "yyyy-mm-ddThh:mm:ss.sss" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "yyyy-mm-ddThh:mm:ss.sss"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "DateTime"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "Lon",
+      "description": "Longitude of the profile location.",
+      "unitText": "degrees_east",
+      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Longitude [degrees_east]" },
-        { "@type": "PropertyValue", "name": "P01", "value": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Longitude [degrees_east]"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "Lat",
+      "description": "Latitude of the profile location.",
+      "unitText": "degrees_north",
+      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALATZZ01/",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Latitude [degrees_north]" },
-        { "@type": "PropertyValue", "name": "P01", "value": "https://vocab.nerc.ac.uk/collection/P01/current/ALATZZ01/" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Latitude [degrees_north]"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "Project Name",
+      "description": "Name of the project associated with the profile data.",
+      "unitText": "unitless",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Project Name" },
-        { "@type": "PropertyValue", "name": "dataType", "value": "Text" },
-        { "@type": "PropertyValue", "name": "role", "value": "meta" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Project Name"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Text"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "Principal Investigator",
+      "description": "Principal investigator or investigators responsible for the data.",
+      "unitText": "unitless",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Principal Investigator" },
-        { "@type": "PropertyValue", "name": "dataType", "value": "Text" },
-        { "@type": "PropertyValue", "name": "role", "value": "meta" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Principal Investigator"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Text"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "Pressure (original) [decibar]",
+      "description": "Sea pressure of the profile observation.",
+      "unitText": "decibar",
+      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/PRESPR01/",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Pressure (original) [decibar]" },
-        { "@type": "PropertyValue", "name": "dataType", "value": "Number" },
-        { "@type": "PropertyValue", "name": "role", "value": "data" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Pressure [dbar]"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "data"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "Temperature (original) [degrees_Celsius]",
+      "description": "Sea water temperature.",
+      "unitText": "degrees_Celsius",
+      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01/",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Temperature (original) [degrees_Celsius]" },
-        { "@type": "PropertyValue", "name": "dataType", "value": "Number" },
-        { "@type": "PropertyValue", "name": "role", "value": "data" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Temperature [degC]"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "data"
+        }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Temperature Flag",
+      "description": "Quality flag for the temperature observation using the ARGO quality flag scheme.",
+      "unitText": "unitless",
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "quality"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "qualityFlagScheme",
+          "value": "ARGO"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "relatedColumn",
+          "value": "Temperature (original) [degrees_Celsius]"
+        }
+      ]
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Temperature std",
+      "description": "Standard deviation of the temperature observation.",
+      "unitText": "degrees_Celsius",
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "error"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "relatedColumn",
+          "value": "Temperature (original) [degrees_Celsius]"
+        }
       ]
     },
     {
       "@type": "PropertyValue",
       "name": "Practical Salinity (original) [psu]",
+      "description": "Practical salinity of the profile observation.",
+      "unitText": "psu",
+      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/PSALPR01/",
       "additionalProperty": [
-        { "@type": "PropertyValue", "name": "targetColumn", "value": "Practical Salinity (original) [psu]" },
-        { "@type": "PropertyValue", "name": "dataType", "value": "Number" },
-        { "@type": "PropertyValue", "name": "role", "value": "data" }
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Practical Salinity [psu]"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "data"
+        }
       ]
     }
   ]
