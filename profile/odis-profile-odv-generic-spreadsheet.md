@@ -434,12 +434,13 @@ or as separate `Date` and `Time` columns.
 
 ODIS2ODV supports this using `role = timeComponent`.
 
-Each time component column SHOULD point to the ODV timestamp target column:
+Columns with `role = timeComponent` are used to assemble the ODV timestamp column:
 
 `yyyy-mm-ddThh:mm:ss.sss`
 
-and declare which part of the timestamp it represents using
-`dateTimeComponent`.
+Therefore `targetColumn` is not required for time-component columns.
+Each time-component column only needs to declare which part of the timestamp
+it represents using `dateTimeComponent`.
 
 Allowed `dateTimeComponent` values:
 
@@ -481,11 +482,6 @@ Example:
       "@type": "PropertyValue",
       "name": "dateTimeComponent",
       "value": "year"
-    },
-    {
-      "@type": "PropertyValue",
-      "name": "targetColumn",
-      "value": "yyyy-mm-ddThh:mm:ss.sss"
     }
   ]
 }
@@ -591,7 +587,7 @@ A converter SHOULD:
 5. Map `role = meta` and `role = data` columns to ODV output columns using
    `targetColumn`
 6. If needed, assemble `yyyy-mm-ddThh:mm:ss.sss` from `role = timeComponent`
-   columns using `dateTimeComponent`
+   columns using `dateTimeComponent`; `targetColumn` is inferred for these columns
 7. Attach auxiliary columns with `role = quality` or `role = error` to their
    `relatedColumn`
 8. Apply ODV-specific requirements

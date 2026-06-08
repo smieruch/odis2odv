@@ -525,7 +525,7 @@
           "type": "string"
         },
         "additionalProperty": {
-          "description": "Per-column mapping metadata. Columns with role 'data' or 'meta' require targetColumn. Auxiliary columns with role 'quality' or 'error' require relatedColumn and do not require targetColumn. Columns with role 'timeComponent' are used to assemble the optional ODV timestamp column yyyy-mm-ddThh:mm:ss.sss.",
+          "description": "Per-column mapping metadata. Columns with role 'data' or 'meta' require targetColumn. Auxiliary columns with role 'quality' or 'error' require relatedColumn and do not require targetColumn. Columns with role 'timeComponent' require dateTimeComponent and are used to assemble the optional ODV timestamp column yyyy-mm-ddThh:mm:ss.sss; targetColumn is not required for timeComponent columns.",
           "type": "array",
           "minItems": 1,
           "items": {
@@ -689,55 +689,28 @@
                       "const": "role"
                     },
                     "value": {
-                      "enum": [
-                        "timeComponent"
-                      ]
+                      "const": "timeComponent"
                     }
                   }
                 }
               },
               "then": {
-                "allOf": [
-                  {
-                    "contains": {
-                      "type": "object",
-                      "required": [
-                        "@type",
-                        "name",
-                        "value"
-                      ],
-                      "properties": {
-                        "@type": {
-                          "const": "PropertyValue"
-                        },
-                        "name": {
-                          "const": "targetColumn"
-                        },
-                        "value": {
-                          "const": "yyyy-mm-ddThh:mm:ss.sss"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "contains": {
-                      "type": "object",
-                      "required": [
-                        "@type",
-                        "name",
-                        "value"
-                      ],
-                      "properties": {
-                        "@type": {
-                          "const": "PropertyValue"
-                        },
-                        "name": {
-                          "const": "dateTimeComponent"
-                        }
-                      }
+                "contains": {
+                  "type": "object",
+                  "required": [
+                    "@type",
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "@type": {
+                      "const": "PropertyValue"
+                    },
+                    "name": {
+                      "const": "dateTimeComponent"
                     }
                   }
-                ]
+                }
               }
             }
           ]
@@ -849,7 +822,7 @@
                   "error",
                   "timeComponent"
                 ],
-                "description": "Column role. If omitted for known ODV core target columns such as Cruise, Station, Longitude [degrees_east], Latitude [degrees_north], yyyy-mm-ddThh:mm:ss.sss, or Type, the converter may infer role=meta. Auxiliary columns use role=quality or role=error. Columns used to assemble an ODV timestamp may use role=timeComponent."
+                "description": "Column role. Columns used to assemble an ODV timestamp use role=timeComponent; in that case dateTimeComponent is required and targetColumn is inferred as yyyy-mm-ddThh:mm:ss.sss."
               }
             },
             "required": [
@@ -936,7 +909,7 @@
           "then": {
             "properties": {
               "value": {
-                "description": "Component of an ODV timestamp assembled from separate source columns. Supported date source formats: yyyy-mm-dd, yyyy-mm. Supported time source formats: hh:mm:ss.sss, hh:mm:ss, hh:mm.",
+                "description": "Component of an ODV timestamp assembled from separate source columns. For role=timeComponent, targetColumn is inferred as yyyy-mm-ddThh:mm:ss.sss. Supported date source formats: yyyy-mm-dd, yyyy-mm. Supported time source formats: hh:mm:ss.sss, hh:mm:ss, hh:mm.",
                 "type": "string",
                 "enum": [
                   "year",
