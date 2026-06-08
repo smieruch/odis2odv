@@ -321,9 +321,20 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "Cruise"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
         }
       ],
-      "description": "HOT cruise number; mapped to the ODV Cruise column."
+      "description": "HOT cruise number (numerical portion of HOT-ID)",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -333,9 +344,20 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "Station"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Text"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
         }
       ],
-      "description": "Hawaii Ocean Time-series cruise/station identifier."
+      "description": "Cruise number (HOT-ID)",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -345,9 +367,20 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "yyyy-mm-ddThh:mm:ss.sss"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "DateTime"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
         }
       ],
-      "description": "Incubation or sampling start date/time in UTC; mapped to the ODV date/time column."
+      "description": "Start date and time in ISO 8601 format %Y-%m-%dT%H:%MZ",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -357,11 +390,21 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "Longitude [degrees_east]"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
         }
       ],
-      "description": "Sampling longitude at Station ALOHA.",
-      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/",
-      "unitText": "Original provider unit: decimal degrees. ODV target column uses degrees_east."
+      "description": "Longitude (west is negative)",
+      "unitText": "decimal degrees",
+      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/"
     },
     {
       "@type": "PropertyValue",
@@ -371,11 +414,21 @@
           "@type": "PropertyValue",
           "name": "targetColumn",
           "value": "Latitude [degrees_north]"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "role",
+          "value": "meta"
         }
       ],
-      "description": "Sampling latitude at Station ALOHA.",
-      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALATZZ01/",
-      "unitText": "Original provider unit: decimal degrees. ODV target column uses degrees_north."
+      "description": "Latitude",
+      "unitText": "decimal degrees",
+      "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALATZZ01/"
     },
     {
       "@type": "PropertyValue",
@@ -397,8 +450,8 @@
           "value": "data"
         }
       ],
-      "description": "Sampling or incubation depth in meters; used as the ODV primary variable for this profile-style dataset.",
-      "unitText": "Original provider unit: meters (m)."
+      "description": "Depth of sampling",
+      "unitText": "meters (m)"
     },
     {
       "@type": "PropertyValue",
@@ -407,7 +460,7 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Incubation type"
+          "value": "Incubation_type"
         },
         {
           "@type": "PropertyValue",
@@ -420,29 +473,31 @@
           "value": "meta"
         }
       ],
-      "description": "Incubation type code from the provider data file."
+      "description": "Incubation type; O = GO-FLO sampled On-deck incubation, I = GO-FLO sampled In-situ incubation, R = Rosette sampled in-situ incubation, N = External closing Niskin sampled in-situ incubation",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
       "name": "Flag_Bottle",
-      "description": "Quality flag for Bottle sample where 1 = not quality controlled, 2 = good data, 3 = suspect data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Bottle flag"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "dataType",
-          "value": "Number"
-        },
-        {
-          "@type": "PropertyValue",
           "name": "role",
-          "value": "data"
+          "value": "quality"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "qualityFlagScheme",
+          "value": "WOCEBOTTLE"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "relatedColumn",
+          "value": "Depth"
         }
-      ]
+      ],
+      "description": "Quality flag for Bottle sample where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -451,7 +506,7 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Incubation duration [h]"
+          "value": "Incub_duration [h]"
         },
         {
           "@type": "PropertyValue",
@@ -464,8 +519,8 @@
           "value": "data"
         }
       ],
-      "description": "Incubation duration in hours.",
-      "unitText": "Original provider unit: hours. ODV target column uses h."
+      "description": "Incubation time",
+      "unitText": "hours"
     },
     {
       "@type": "PropertyValue",
@@ -474,12 +529,12 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "End date/time [UTC]"
+          "value": "End_ISO_DateTime_UTC"
         },
         {
           "@type": "PropertyValue",
           "name": "dataType",
-          "value": "Text"
+          "value": "DateTime"
         },
         {
           "@type": "PropertyValue",
@@ -487,12 +542,18 @@
           "value": "meta"
         }
       ],
-      "description": "Incubation end date/time in UTC."
+      "description": "End date and time in ISO 8601 format %Y-%m-%dT%H:%MZ",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
       "name": "Chl_a_mean",
       "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Chl_a_mean [mg/m^3]"
+        },
         {
           "@type": "PropertyValue",
           "name": "dataType",
@@ -502,14 +563,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Chl_a_mean [mg/m^3]"
         }
       ],
-      "unitText": "Original provider unit: milligrams per cubic meter (mg/m^3)."
+      "description": "Chlorophyll a mean value",
+      "unitText": "milligrams per cubic meter (mg/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -526,7 +583,8 @@
           "value": "Chl_a_mean"
         }
       ],
-      "unitText": "Original provider unit: milligrams per cubic meter (mg/m^3)."
+      "description": "Chlorophyll a standard deviation",
+      "unitText": "milligrams per cubic meter (mg/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -547,12 +605,19 @@
           "name": "relatedColumn",
           "value": "Chl_a_mean"
         }
-      ]
+      ],
+      "description": "Quality flag for Chlorophyll a measurement where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
       "name": "Pheo_mean",
       "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Pheo_mean [mg/m^3]"
+        },
         {
           "@type": "PropertyValue",
           "name": "dataType",
@@ -562,14 +627,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Pheo_mean [mg/m^3]"
         }
       ],
-      "unitText": "Original provider unit: milligrams per cubic meter (mg/m^3)."
+      "description": "Phaeopigments mean value",
+      "unitText": "milligrams per cubic meter (mg/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -586,7 +647,8 @@
           "value": "Pheo_mean"
         }
       ],
-      "unitText": "Original provider unit: milligrams per cubic meter (mg/m^3)."
+      "description": "Phaeopigments standard deviation",
+      "unitText": "milligrams per cubic meter (mg/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -607,7 +669,9 @@
           "name": "relatedColumn",
           "value": "Pheo_mean"
         }
-      ]
+      ],
+      "description": "Quality flag for Phaeopigment measurement where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -615,6 +679,11 @@
       "additionalProperty": [
         {
           "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Light_rep1 [mg C/m^3]"
+        },
+        {
+          "@type": "PropertyValue",
           "name": "dataType",
           "value": "Number"
         },
@@ -622,15 +691,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Light_rep1 [mg C/m^3]"
         }
       ],
-      "description": "Light incubation replicate 1 for 14C primary productivity.",
-      "unitText": "Original provider unit: milligrams Carbon per cubic meter (mg C/m^3)."
+      "description": "Primary production measured in Light bottle replicate #1",
+      "unitText": "milligrams Carbon per cubic meter (mg C/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -638,6 +702,11 @@
       "additionalProperty": [
         {
           "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Light_rep2 [mg C/m^3]"
+        },
+        {
+          "@type": "PropertyValue",
           "name": "dataType",
           "value": "Number"
         },
@@ -645,15 +714,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Light_rep2 [mg C/m^3]"
         }
       ],
-      "description": "Light incubation replicate 2 for 14C primary productivity.",
-      "unitText": "Original provider unit: milligrams Carbon per cubic meter (mg C/m^3)."
+      "description": "Primary production measured in Light bottle replicate #2",
+      "unitText": "milligrams Carbon per cubic meter (mg C/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -661,6 +725,11 @@
       "additionalProperty": [
         {
           "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Light_rep3 [mg C/m^3]"
+        },
+        {
+          "@type": "PropertyValue",
           "name": "dataType",
           "value": "Number"
         },
@@ -668,15 +737,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Light_rep3 [mg C/m^3]"
         }
       ],
-      "description": "Light incubation replicate 3 for 14C primary productivity.",
-      "unitText": "Original provider unit: milligrams Carbon per cubic meter (mg C/m^3)."
+      "description": "Primary production measured in Light bottle replicate #3",
+      "unitText": "milligrams Carbon per cubic meter (mg C/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -707,7 +771,9 @@
           "name": "relatedColumn",
           "value": "Light_rep3"
         }
-      ]
+      ],
+      "description": "Quality flag for Light incubation bottles where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -715,6 +781,11 @@
       "additionalProperty": [
         {
           "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Dark_rep1 [mg C/m^3]"
+        },
+        {
+          "@type": "PropertyValue",
           "name": "dataType",
           "value": "Number"
         },
@@ -722,15 +793,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Dark_rep1 [mg C/m^3]"
         }
       ],
-      "description": "Dark incubation replicate 1 for 14C primary productivity.",
-      "unitText": "Original provider unit: milligrams Carbon per cubic meter (mg C/m^3)."
+      "description": "Primary production measured in Dark bottle replicate #1",
+      "unitText": "milligrams Carbon per cubic meter (mg C/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -738,6 +804,11 @@
       "additionalProperty": [
         {
           "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Dark_rep2 [mg C/m^3]"
+        },
+        {
+          "@type": "PropertyValue",
           "name": "dataType",
           "value": "Number"
         },
@@ -745,15 +816,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Dark_rep2 [mg C/m^3]"
         }
       ],
-      "description": "Dark incubation replicate 2 for 14C primary productivity.",
-      "unitText": "Original provider unit: milligrams Carbon per cubic meter (mg C/m^3)."
+      "description": "Primary production measured in Dark bottle replicate #2",
+      "unitText": "milligrams Carbon per cubic meter (mg C/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -761,6 +827,11 @@
       "additionalProperty": [
         {
           "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Dark_rep3 [mg C/m^3]"
+        },
+        {
+          "@type": "PropertyValue",
           "name": "dataType",
           "value": "Number"
         },
@@ -768,15 +839,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Dark_rep3 [mg C/m^3]"
         }
       ],
-      "description": "Dark incubation replicate 3 for 14C primary productivity.",
-      "unitText": "Original provider unit: milligrams Carbon per cubic meter (mg C/m^3)."
+      "description": "Primary production measured in Dark bottle replicate #3",
+      "unitText": "milligrams Carbon per cubic meter (mg C/m^3)"
     },
     {
       "@type": "PropertyValue",
@@ -807,12 +873,19 @@
           "name": "relatedColumn",
           "value": "Dark_rep3"
         }
-      ]
+      ],
+      "description": "Quality flag for Dark incubation bottles where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
       "name": "Salt",
       "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Salt [unitless]"
+        },
         {
           "@type": "PropertyValue",
           "name": "dataType",
@@ -822,14 +895,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Salt [unitless]"
         }
       ],
-      "description": "Salinity value from the provider data file."
+      "description": "Salinity (PSS-78)",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -850,12 +919,19 @@
           "name": "relatedColumn",
           "value": "Salt"
         }
-      ]
+      ],
+      "description": "Quality flag for Salinity where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
       "name": "Prochloro",
       "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Prochloro [count/mL]"
+        },
         {
           "@type": "PropertyValue",
           "name": "dataType",
@@ -865,14 +941,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Prochloro [count/mL]"
         }
       ],
-      "unitText": "Original provider unit: count per milliliter."
+      "description": "Prochlorococcus abundance",
+      "unitText": "count per milliliter"
     },
     {
       "@type": "PropertyValue",
@@ -893,12 +965,19 @@
           "name": "relatedColumn",
           "value": "Prochloro"
         }
-      ]
+      ],
+      "description": "Quality flag for Prochlorococcus where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
       "name": "Hetero",
       "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Hetero [count/mL]"
+        },
         {
           "@type": "PropertyValue",
           "name": "dataType",
@@ -908,14 +987,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Hetero [count/mL]"
         }
       ],
-      "unitText": "Original provider unit: count per milliliter."
+      "description": "Heterotrophic bacteria abundance",
+      "unitText": "count per milliliter"
     },
     {
       "@type": "PropertyValue",
@@ -936,12 +1011,19 @@
           "name": "relatedColumn",
           "value": "Hetero"
         }
-      ]
+      ],
+      "description": "Quality flag for Heterotrophic Bacteria where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
       "name": "Synecho",
       "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Synecho [count/mL]"
+        },
         {
           "@type": "PropertyValue",
           "name": "dataType",
@@ -951,14 +1033,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Synecho [count/mL]"
         }
       ],
-      "unitText": "Original provider unit: count per milliliter."
+      "description": "Synechococcus abundance",
+      "unitText": "count per milliliter"
     },
     {
       "@type": "PropertyValue",
@@ -979,12 +1057,19 @@
           "name": "relatedColumn",
           "value": "Synecho"
         }
-      ]
+      ],
+      "description": "Quality flag for Synechococcus where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
       "name": "Euk",
       "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Euk [count/mL]"
+        },
         {
           "@type": "PropertyValue",
           "name": "dataType",
@@ -994,14 +1079,10 @@
           "@type": "PropertyValue",
           "name": "role",
           "value": "data"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Euk [count/mL]"
         }
       ],
-      "unitText": "Original provider unit: count per milliliter."
+      "description": "Eukaryotes abundance",
+      "unitText": "count per milliliter"
     },
     {
       "@type": "PropertyValue",
@@ -1022,7 +1103,9 @@
           "name": "relatedColumn",
           "value": "Euk"
         }
-      ]
+      ],
+      "description": "Quality flag for Eukaryotes where 1 = not quality controlled, 2 = good data, 3 = suspect (questionable) data, 4 = bad data, 5 = missing value, 9 = variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -1108,7 +1191,9 @@
           "name": "relatedColumn",
           "value": "Euk"
         }
-      ]
+      ],
+      "description": "Quality Flags (original combined format) for the bottle, chlorophyll, phaeopigments, light incubation, dark incubation, salinity & bacteria values respectively. 1: not quality controlled, 2: good data, 3: suspect (questionable) data, 4: bad data, 5: missing value, 9: variable not measured during this cast",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -1117,7 +1202,7 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Source file name"
+          "value": "file_name"
         },
         {
           "@type": "PropertyValue",
@@ -1130,7 +1215,8 @@
           "value": "meta"
         }
       ],
-      "description": "Original HOT source file name recorded by BCO-DMO."
+      "description": "Original filename of the primary production data from HOT",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -1139,7 +1225,7 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Local date"
+          "value": "Date"
         },
         {
           "@type": "PropertyValue",
@@ -1152,7 +1238,8 @@
           "value": "meta"
         }
       ],
-      "description": "Provider date field in HST."
+      "description": "Original Date in HST",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -1161,7 +1248,7 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Local start time"
+          "value": "Start"
         },
         {
           "@type": "PropertyValue",
@@ -1174,7 +1261,8 @@
           "value": "meta"
         }
       ],
-      "description": "Provider local start time field in HST."
+      "description": "Original Start time in HST",
+      "unitText": "unitless"
     },
     {
       "@type": "PropertyValue",
@@ -1183,7 +1271,7 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Local end time"
+          "value": "End"
         },
         {
           "@type": "PropertyValue",
@@ -1196,7 +1284,8 @@
           "value": "meta"
         }
       ],
-      "description": "Provider local end time field in HST."
+      "description": "Original End time in HST",
+      "unitText": "unitless"
     }
   ]
 }

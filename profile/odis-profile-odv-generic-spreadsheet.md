@@ -395,8 +395,32 @@ be repeated for these known ODV columns.
 
 Required for auxiliary columns with `role = quality` or `role = error`.
 
-It contains the exact source column name of the measured variable to which the
-auxiliary column belongs.
+`relatedColumn` contains the final ODV target column name of the measured
+variable to which the auxiliary column belongs.
+
+It MUST refer to the `targetColumn` value, not to the original source column
+name.
+
+Example:
+
+```json
+{
+  "@type": "PropertyValue",
+  "name": "Temperature_sd",
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "role",
+      "value": "error"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "relatedColumn",
+      "value": "Temperature [degC]"
+    }
+  ]
+}
+```
 
 ### qualityFlagScheme
 

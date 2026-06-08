@@ -791,7 +791,6 @@
                 "enum": [
                   "Text",
                   "Number",
-                  "DateTime"
                 ]
               }
             },
