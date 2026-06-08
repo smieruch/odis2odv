@@ -242,6 +242,13 @@ For the known ODV metadata columns:
 converters infer the role and datatype. Therefore these properties do
 not need to be explicitly provided in the JSON-LD.
 
+
+For known ODV metadata columns, the JSON-LD only needs the `targetColumn`
+mapping. The converter automatically infers `role` and `dataType`.
+
+Custom metadata variables still require explicit `role = meta` and
+`dataType`.
+
 If present, `Type` is interpreted as metadata text.
 
 Allowed values in the source data column are:
@@ -438,6 +445,11 @@ Example:
       "@type": "PropertyValue",
       "name": "dateTimeComponent",
       "value": "year"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "targetColumn",
+      "value": "yyyy-mm-ddThh:mm:ss.sss"
     }
   ]
 }

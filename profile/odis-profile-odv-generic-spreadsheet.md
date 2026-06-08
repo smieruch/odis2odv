@@ -277,11 +277,6 @@ Example:
       "@type": "PropertyValue",
       "name": "targetColumn",
       "value": "Longitude [degrees_east]"
-    },
-    {
-      "@type": "PropertyValue",
-      "name": "role",
-      "value": "meta"
     }
   ]
 }
@@ -417,6 +412,23 @@ It contains an ODV-supported quality flag set name, for example:
 
 ---
 
+
+
+For known ODV core metadata columns:
+
+- `Cruise`
+- `Station`
+- `Longitude [degrees_east]`
+- `Latitude [degrees_north]`
+- `yyyy-mm-ddThh:mm:ss.sss`
+- `Type`
+
+the converter infers:
+
+- `role`
+- `dataType`
+
+Therefore these properties do not need to be provided in the JSON-LD mapping.
 
 ## Timestamp Assembly from Separate Columns
 

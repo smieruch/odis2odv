@@ -3,9 +3,9 @@
     "@vocab": "https://schema.org/"
   },
   "@type": "Dataset",
-  "@id": "https://example.org/odis2odv/dataset/ocean-data-test-003#odis2odv",
-  "identifier": "https://example.org/odis2odv/dataset/ocean-data-test-003",
-  "url": "https://example.org/odis2odv/dataset/ocean-data-test-003",
+  "@id": "https://github.com/smieruch/odis2odv/blob/main/examples/ocean-data-test-003.json#odis2odv",
+  "identifier": "https://github.com/smieruch/odis2odv/tree/main/examples/ocean-data-test-003",
+  "url": "https://github.com/smieruch/odis2odv/tree/main/examples",
   "name": "ODIS2ODV example profile dataset",
   "description": "Small tutorial dataset demonstrating how schema.org JSON-LD can describe the deterministic conversion of a tab-separated ocean profile table into an ODV Generic Spreadsheet. The example includes metadata columns, measured data columns, one quality flag column, and one error/standard-deviation column.",
   "keywords": [
@@ -23,7 +23,7 @@
       "name": "ocean-data-test-003.txt",
       "description": "Small tab-separated tutorial source dataset for ODIS2ODV.",
       "encodingFormat": "text/tab-separated-values",
-      "contentUrl": "https://example.org/odis2odv/dataset/ocean-data-test-003.txt"
+      "contentUrl": "https://raw.githubusercontent.com/smieruch/odis2odv/main/examples/ocean-data-test-003.txt"
     }
   ],
   "additionalProperty": [
@@ -58,7 +58,6 @@
       "@type": "PropertyValue",
       "name": "Float ID",
       "description": "Argo float identifier used as the ODV cruise/platform identifier.",
-      "unitText": "unitless",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
@@ -71,7 +70,6 @@
       "@type": "PropertyValue",
       "name": "Profile Number",
       "description": "Profile number used as the ODV station identifier.",
-      "unitText": "unitless",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
@@ -82,22 +80,8 @@
     },
     {
       "@type": "PropertyValue",
-      "name": "Type",
-      "description": "ODV sample type. C indicates CTD measurements, B indicates bottle measurements.",
-      "unitText": "unitless",
-      "additionalProperty": [
-        {
-          "@type": "PropertyValue",
-          "name": "targetColumn",
-          "value": "Type"
-        }
-      ]
-    },
-    {
-      "@type": "PropertyValue",
       "name": "datetime",
       "description": "Profile date and time in ISO 8601 format.",
-      "unitText": "unitless",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
@@ -110,7 +94,7 @@
       "@type": "PropertyValue",
       "name": "Lon",
       "description": "Longitude of the profile location.",
-      "unitText": "degrees_east",
+      "unitText": "Original source unit information: degrees east.",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/",
       "additionalProperty": [
         {
@@ -124,7 +108,7 @@
       "@type": "PropertyValue",
       "name": "Lat",
       "description": "Latitude of the profile location.",
-      "unitText": "degrees_north",
+      "unitText": "Original source unit information: degrees north.",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALATZZ01/",
       "additionalProperty": [
         {
@@ -138,7 +122,6 @@
       "@type": "PropertyValue",
       "name": "Project Name",
       "description": "Name of the project associated with the profile data.",
-      "unitText": "unitless",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
@@ -161,7 +144,6 @@
       "@type": "PropertyValue",
       "name": "Principal Investigator",
       "description": "Principal investigator or investigators responsible for the data.",
-      "unitText": "unitless",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
@@ -232,7 +214,6 @@
       "@type": "PropertyValue",
       "name": "Temperature Flag",
       "description": "Quality flag for the temperature observation using the ARGO quality flag scheme.",
-      "unitText": "unitless",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
