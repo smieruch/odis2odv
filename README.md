@@ -119,6 +119,46 @@ controlled values and validation rules of the ODIS2ODV profile.
 
 ------------------------------------------------------------------------
 
+
+## Repository Contents
+
+├── examples\
+│ ├── ocean-data-test-003.json\
+│ └── ocean-data-test-003.txt\
+├── profile\
+│ └── odis-profile-odv-generic-spreadsheet.md\
+├── schema\
+│ └── odv-odis2odv.schema.json\
+├── tools\
+│ └── jsonValidate.py\
+├── jsonValidate.bash\
+├── requirements.txt\
+└── README.md
+
+------------------------------------------------------------------------
+
+### `profile/`
+
+Human-readable profile description (ODIS Book style) defining scope,
+semantics, and processing rules.
+
+### `schema/`
+
+JSON Schema for validating schema.org JSON-LD mapping documents.
+
+### `examples/`
+
+Minimal, working JSON-LD examples that:
+
+-   pass schema validation,
+-   can drive an ODV Generic Spreadsheet generator.
+
+### `hot/`
+
+JSON-LD files for the Hawaii Ocean Time-Series data hosted at BCO-DMO.
+
+------------------------------------------------------------------------
+
 ## Discovering ODV-compatible datasets
 
 ODIS2ODV extends existing schema.org/ODIS JSON-LD metadata with
@@ -159,44 +199,6 @@ Open generated ODV Spreadsheet in ODV
 The keyword is a discovery hint. The actual conversion instructions are
 stored in the JSON-LD metadata using `PropertyValue.additionalProperty`
 entries such as `targetColumn`, `role`, and `dataType`.
-
-
-## Repository Contents
-
-├── examples\
-│ ├── ocean-data-test-003.json\
-│ └── ocean-data-test-003.txt\
-├── profile\
-│ └── odis-profile-odv-generic-spreadsheet.md\
-├── schema\
-│ └── odv-odis2odv.schema.json\
-├── tools\
-│ └── jsonValidate.py\
-├── jsonValidate.bash\
-├── requirements.txt\
-└── README.md
-
-------------------------------------------------------------------------
-
-### `profile/`
-
-Human-readable profile description (ODIS Book style) defining scope,
-semantics, and processing rules.
-
-### `schema/`
-
-JSON Schema for validating schema.org JSON-LD mapping documents.
-
-### `examples/`
-
-Minimal, working JSON-LD examples that:
-
--   pass schema validation,
--   can drive an ODV Generic Spreadsheet generator.
-
-### `hot/`
-
-JSON-LD files for the Hawaii Ocean Time-Series data hosted at BCO-DMO.
 
 ------------------------------------------------------------------------
 
