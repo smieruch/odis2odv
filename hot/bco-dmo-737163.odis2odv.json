@@ -523,7 +523,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Chl_a_mean"
+          "value": "Chl_a_mean [mg/m^3]"
         }
       ],
       "unitText": "Original provider unit: milligrams per cubic meter (mg/m^3)."
@@ -545,7 +545,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Chl_a_mean"
+          "value": "Chl_a_mean [mg/m^3]"
         }
       ]
     },
@@ -583,7 +583,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Pheo_mean"
+          "value": "Pheo_mean [mg/m^3]"
         }
       ],
       "unitText": "Original provider unit: milligrams per cubic meter (mg/m^3)."
@@ -605,7 +605,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Pheo_mean"
+          "value": "Pheo_mean [mg/m^3]"
         }
       ]
     },
@@ -695,17 +695,17 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Light_rep1"
+          "value": "Light_rep1 [mg C/m^3]"
         },
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Light_rep2"
+          "value": "Light_rep2 [mg C/m^3]"
         },
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Light_rep3"
+          "value": "Light_rep3 [mg C/m^3]"
         }
       ]
     },
@@ -795,17 +795,17 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Dark_rep1"
+          "value": "Dark_rep1 [mg C/m^3]"
         },
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Dark_rep2"
+          "value": "Dark_rep2 [mg C/m^3]"
         },
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Dark_rep3"
+          "value": "Dark_rep3 [mg C/m^3]"
         }
       ]
     },
@@ -848,7 +848,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Salt"
+          "value": "Salt [unitless]"
         }
       ]
     },
@@ -891,7 +891,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Prochloro"
+          "value": "Prochloro [count/mL]"
         }
       ]
     },
@@ -934,7 +934,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Hetero"
+          "value": "Hetero [count/mL]"
         }
       ]
     },
@@ -977,7 +977,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Synecho"
+          "value": "Synecho [count/mL]"
         }
       ]
     },
@@ -1020,7 +1020,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Euk"
+          "value": "Euk [count/mL]"
         }
       ]
     },
@@ -1030,85 +1030,21 @@
       "additionalProperty": [
         {
           "@type": "PropertyValue",
+          "name": "targetColumn",
+          "value": "Flag"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "dataType",
+          "value": "Number"
+        },
+        {
+          "@type": "PropertyValue",
           "name": "role",
-          "value": "quality"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "qualityFlagScheme",
-          "value": "WOCEBOTTLE"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Depth"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Chl_a_mean"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Pheo_mean"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Light_rep1"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Light_rep2"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Light_rep3"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Dark_rep1"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Dark_rep2"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Dark_rep3"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Salt"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Prochloro"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Hetero"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Synecho"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "relatedColumn",
-          "value": "Euk"
+          "value": "data"
         }
-      ]
+      ],
+      "description": "Quality Flags (original combined format) for the bottle, chlorophyll, phaeopigments, light incubation, dark incubation, salinity & bacteria values respectively. 1: not quality controlled, 2: good data, 3: suspect (questionable) data, 4: bad data, 5: missing value, 9: variable not measured during this cast"
     },
     {
       "@type": "PropertyValue",
