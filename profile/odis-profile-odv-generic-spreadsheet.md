@@ -94,6 +94,21 @@ ontology.
 
 ---
 
+## Dataset discovery
+
+ODIS2ODV-compatible datasets SHOULD include:
+
+```json
+"keywords": [
+  "ODV-compatible"
+]
+```
+
+Datasets following this profile SHOULD include the keyword
+ODV-compatible in Dataset.keywords to support discovery of ODV-ready
+datasets in ODIS catalogues.
+
+
 ## Required Dataset Metadata
 
 A conforming dataset MUST provide:

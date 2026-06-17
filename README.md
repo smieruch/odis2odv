@@ -119,6 +119,48 @@ controlled values and validation rules of the ODIS2ODV profile.
 
 ------------------------------------------------------------------------
 
+## Discovering ODV-compatible datasets
+
+ODIS2ODV extends existing schema.org/ODIS JSON-LD metadata with
+additional information required for deterministic conversion into an
+ODV Generic Spreadsheet.
+
+Datasets following this profile should include the keyword:
+
+```json
+"keywords": [
+  "ODV-compatible"
+]
+```
+
+This allows ODIS catalogues and other schema.org-based discovery systems
+to identify datasets that can be directly converted and used with
+Ocean Data View (ODV).
+
+A typical workflow is:
+
+```text
+Search ODIS catalogue
+        |
+        | keyword: "ODV-compatible"
+        v
+Find ODV-ready datasets
+        |
+        v
+Download JSON-LD metadata
+        |
+        v
+Run ODIS2ODV converter
+        |
+        v
+Open generated ODV Spreadsheet in ODV
+```
+
+The keyword is a discovery hint. The actual conversion instructions are
+stored in the JSON-LD metadata using `PropertyValue.additionalProperty`
+entries such as `targetColumn`, `role`, and `dataType`.
+
+
 ## Repository Contents
 
 ├── examples\
