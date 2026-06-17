@@ -446,11 +446,6 @@ Example:
       "name": "dateTimeComponent",
       "value": "year"
     },
-    {
-      "@type": "PropertyValue",
-      "name": "targetColumn",
-      "value": "yyyy-mm-ddThh:mm:ss.sss"
-    }
   ]
 }
 ```
