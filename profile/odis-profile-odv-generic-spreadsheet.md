@@ -627,6 +627,24 @@ These checks are part of converter-level data validation.
 
 ## Processing Model
 
+### Source Data Assumptions
+
+ODIS2ODV assumes that the source dataset is represented as a
+rectangular, column-oriented table in which each row corresponds to
+one observation.
+
+Rows belonging to the same logical observation unit SHALL appear as
+one contiguous block in the source table.
+
+Within each logical observation unit, observations SHALL be ordered by
+the declared primary variable (`primaryVariableTargetColumn`).
+
+Converters MAY validate these assumptions and report violations as data
+validation errors. Converters SHOULD NOT silently reorder observations unless
+explicitly requested.
+
+### Processing
+
 A converter SHOULD:
 
 1. Validate JSON-LD against the ODIS2ODV JSON Schema

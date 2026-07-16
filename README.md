@@ -597,6 +597,98 @@ The schema.org property `unitText` is optional. It can be used to
 preserve additional source/provider unit information, but it is not
 required for conversion and is not used to construct ODV column names.
 
+
+## ODIS2ODV Converter
+
+The repository contains a reference implementation of the ODIS2ODV
+converter written in C++ using the Qt framework.
+
+The converter is implemented as the command-line application
+`odisodv` and is located in:
+
+```text
+converter/odisodv/
+```
+
+The planned command-line interface provides three commands:
+
+```text
+odisodv inspect <source>
+odisodv validate <source>
+odisodv convert <source>
+```
+
+The converter is being developed incrementally. The current
+implementation can:
+
+* parse command-line arguments,
+* load a local JSON-LD file,
+* validate its JSON syntax,
+* verify that the root value is a JSON object,
+* inspect selected dataset properties.
+
+Metadata validation and conversion into an ODV Generic Spreadsheet are
+under development.
+
+### Build requirements
+
+Building the converter requires:
+
+* a C++17-compatible compiler,
+* CMake 3.14 or newer,
+* Qt 5 or Qt 6 with the Core module.
+
+On Debian or Ubuntu, the required development packages can, for
+example, be installed for Qt 6 with:
+
+```bash
+sudo apt install build-essential cmake qt6-base-dev
+```
+
+Alternatively, for Qt 5:
+
+```bash
+sudo apt install build-essential cmake qtbase5-dev
+```
+
+### Building from the command line
+
+Clone the repository and configure an out-of-source build:
+
+```bash
+git clone https://github.com/smieruch/odis2odv.git
+cd odis2odv
+
+cmake -S converter/odisodv -B build
+cmake --build build
+```
+
+The resulting executable is located in the build directory:
+
+```bash
+./build/odisodv --help
+```
+
+For example, the included JSON-LD test dataset can be inspected with:
+
+```bash
+./build/odisodv inspect examples/ocean-data-test-003.json
+```
+
+The build directory contains generated files and should not be committed
+to the repository.
+
+### Building with Qt Creator
+
+The converter can also be built using Qt Creator:
+
+1. Open `converter/odisodv/CMakeLists.txt`.
+2. Select a Qt 5 or Qt 6 desktop kit.
+3. Configure and build the project.
+4. Run the resulting `odisodv` executable with the desired command-line
+   arguments.
+
+
 ------------------------------------------------------------------------
 
 ## License
