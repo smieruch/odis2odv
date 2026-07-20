@@ -86,7 +86,7 @@
       }
     },
     "additionalProperty": {
-      "description": "Dataset-level ODV collection metadata and conversion hints. Required entries: DataField, DataType, primaryVariableTargetColumn, and columnSeparator. DataField and DataType must use supported ODV controlled values. fillValue and timeZone are optional.",
+      "description": "Dataset-level ODV collection metadata and conversion hints. Required entries: dataField, dataType, primaryVariableTargetColumn, and columnSeparator. dataField and dataType must use supported ODV controlled values. fillValue and timeZone are optional.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/DatasetAdditionalProperty"
@@ -106,7 +106,7 @@
                 "const": "PropertyValue"
               },
               "name": {
-                "const": "DataField"
+                "const": "dataField"
               }
             }
           }
@@ -124,7 +124,7 @@
                 "const": "PropertyValue"
               },
               "name": {
-                "const": "DataType"
+                "const": "dataType"
               }
             }
           }
@@ -308,8 +308,8 @@
         "name": {
           "type": "string",
           "enum": [
-            "DataField",
-            "DataType",
+            "dataField",
+            "dataType",
             "primaryVariableTargetColumn",
             "columnSeparator",
             "fillValue",
@@ -340,7 +340,7 @@
           "if": {
             "properties": {
               "name": {
-                "const": "DataField"
+                "const": "dataField"
               }
             },
             "required": [
@@ -360,7 +360,7 @@
                   "SeaIce",
                   "Sediment"
                 ],
-                "description": "ODV DataField value. Supported ODV values are GeneralField, Ocean, Atmosphere, Land, IceSheet, SeaIce, and Sediment."
+                "description": "ODV dataField value. Supported ODV values are GeneralField, Ocean, Atmosphere, Land, IceSheet, SeaIce, and Sediment."
               }
             },
             "required": [
@@ -372,7 +372,7 @@
           "if": {
             "properties": {
               "name": {
-                "const": "DataType"
+                "const": "dataType"
               }
             },
             "required": [
@@ -389,7 +389,7 @@
                   "TimeSeries",
                   "Trajectories"
                 ],
-                "description": "ODV DataType value. Supported ODV values are GeneralType, Profiles, TimeSeries, and Trajectories."
+                "description": "ODV dataType value. Supported ODV values are GeneralType, Profiles, TimeSeries, and Trajectories."
               }
             },
             "required": [

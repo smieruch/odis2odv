@@ -78,7 +78,7 @@ FAIR discovery
 ODIS2ODV conversion profile
 inside PropertyValue
 │
-├── DataField
+├── dataField
 │     ├── GeneralField
 │     ├── Ocean
 │     ├── Atmosphere
@@ -87,7 +87,7 @@ inside PropertyValue
 │     ├── SeaIce
 │     └── Sediment
 │
-├── DataType
+├── dataType
 │     ├── GeneralType
 │     ├── Profiles
 │     ├── TimeSeries
@@ -207,9 +207,9 @@ entries such as `targetColumn`, `role`, and `dataType`.
 ODV collection information is stored using schema.org
 `additionalProperty`:
 
--   `DataField` → ODV domain. Supported values: `GeneralField`, `Ocean`,
+-   `dataField` → ODV domain. Supported values: `GeneralField`, `Ocean`,
     `Atmosphere`, `Land`, `IceSheet`, `SeaIce`, `Sediment`
--   `DataType` → ODV collection type. Supported values: `GeneralType`,
+-   `dataType` → ODV collection type. Supported values: `GeneralType`,
     `Profiles`, `TimeSeries`, `Trajectories`
 -   `primaryVariableTargetColumn` → primary ODV variable
 -   `columnSeparator` → source table separator
@@ -342,16 +342,16 @@ ODV-specific collection information is added through
 ``` json
 {
   "@type": "PropertyValue",
-  "name": "DataField",
+  "name": "dataField",
   "value": "Ocean"
 }
 ```
 
 Common ODIS2ODV properties are:
 
--   `DataField` with supported values: `GeneralField`, `Ocean`,
+-   `dataField` with supported values: `GeneralField`, `Ocean`,
     `Atmosphere`, `Land`, `IceSheet`, `SeaIce`, `Sediment`
--   `DataType` with supported values: `GeneralType`, `Profiles`,
+-   `dataType` with supported values: `GeneralType`, `Profiles`,
     `TimeSeries`, `Trajectories`
 -   `primaryVariableTargetColumn`
 -   `columnSeparator`
@@ -527,7 +527,7 @@ example `UTC`.
 The JSON Schema validates the JSON-LD mapping metadata.
 
 It can validate values that are present in the JSON-LD document, for
-example `DataField`, `DataType`, `role`, `qualityFlagScheme`,
+example `dataField`, `dataType`, `role`, `qualityFlagScheme`,
 `dateTimeComponent`, and `targetColumn`.
 
 It cannot validate values that occur only in the source data table, for

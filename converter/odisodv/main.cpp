@@ -6,10 +6,23 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
+#include <qjsonarray.h>
 #include <qjsonobject.h>
 #include <qjsonvalue.h>
 #include <QJsonArray>
 
+//======================================================================
+// Data Structures
+//======================================================================
+
+struct DatasetProperties
+{
+    QString dataField;
+    QString dataType;
+    QString primaryVariableTargetColumn;
+    QString columnSeparator;
+    QJsonValue fillValue;
+};
 
 //======================================================================
 // Function Declarations
@@ -27,7 +40,8 @@ QJsonObject getRequiredObject(const QJsonObject& object,
 QJsonArray getRequiredArray(const QJsonObject& object,
                             const QString& key,
                             QTextStream& errorOutput);
-
+void inspectVariableMeasured(const QJsonArray &variables,
+                             QTextStream& out);
 //======================================================================
 // main
 //======================================================================
@@ -317,4 +331,23 @@ QJsonArray getRequiredArray(const QJsonObject& object,
     }
 
     return value.toArray();
+}
+
+
+//----------------------------------------------------------------------
+// inspectVariableMeasured()
+//
+//----------------------------------------------------------------------
+
+void inspectVariableMeasured(const QJsonArray& variables, QTextStream& out)
+{
+  for (const QJsonValue& value : variables) {
+    if (!value.isObject()) {
+      out << "Property is not an object: " << "\n";
+    }
+  }
+  
+  
+  
+  
 }

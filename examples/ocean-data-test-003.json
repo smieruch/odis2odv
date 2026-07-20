@@ -29,12 +29,12 @@
   "additionalProperty": [
     {
       "@type": "PropertyValue",
-      "name": "DataField",
+      "name": "dataField",
       "value": "Ocean"
     },
     {
       "@type": "PropertyValue",
-      "name": "DataType",
+      "name": "dataType",
       "value": "Profiles"
     },
     {

@@ -82,8 +82,8 @@ Examples:
 - `role`
 - `qualityFlagScheme`
 - `relatedColumn`
-- `DataField`
-- `DataType`
+- `dataField`
+- `dataType`
 - `primaryVariableTargetColumn`
 - `columnSeparator`
 - `fillValue`
@@ -161,7 +161,7 @@ Each entry is a schema.org `PropertyValue`.
 
 ### ODV Collection Metadata
 
-#### DataField
+#### dataField
 
 Defines the ODV scientific domain.
 
@@ -180,12 +180,12 @@ Example:
 ```json
 {
   "@type": "PropertyValue",
-  "name": "DataField",
+  "name": "dataField",
   "value": "Ocean"
 }
 ```
 
-#### DataType
+#### dataType
 
 Defines the ODV data organization.
 
@@ -201,7 +201,7 @@ Example:
 ```json
 {
   "@type": "PropertyValue",
-  "name": "DataType",
+  "name": "dataType",
   "value": "Profiles"
 }
 ```
@@ -245,8 +245,8 @@ Defines the missing-value marker.
 
 The following dataset-level entries are required:
 
-- `DataField`
-- `DataType`
+- `dataField`
+- `dataType`
 - `primaryVariableTargetColumn`
 - `columnSeparator`
 
@@ -607,8 +607,8 @@ The JSON Schema validates the JSON-LD mapping metadata.
 
 It can validate values that are present in the JSON-LD document, for example:
 
-- `DataField`
-- `DataType`
+- `dataField`
+- `dataType`
 - `role`
 - `qualityFlagScheme`
 - `dateTimeComponent`
