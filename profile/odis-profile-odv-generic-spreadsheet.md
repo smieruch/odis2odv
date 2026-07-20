@@ -40,7 +40,7 @@ and services that generate ODV-compatible outputs programmatically.
 - Deterministic generation of ODV Generic Spreadsheets
 - ODV collection metadata description
 - Source-column to ODV-column mappings
-- Auxiliary column descriptions for quality flags and errors/standard deviations
+- Auxiliary column descriptions for quality flags and standard deviations
 
 ### Out of scope
 
@@ -359,7 +359,7 @@ Allowed values:
 - `meta`
 - `data`
 - `quality`
-- `error`
+- `standardDeviation`
 - `timeComponent`
 
 Regular ODV columns use:
@@ -370,7 +370,7 @@ Regular ODV columns use:
 Auxiliary columns use:
 
 - `role = quality`
-- `role = error`
+- `role = standardDeviation`
 
 ### targetColumn
 
@@ -408,7 +408,7 @@ be repeated for these known ODV columns.
 
 ### relatedColumn
 
-Required for auxiliary columns with `role = quality` or `role = error`.
+Required for auxiliary columns with `role = quality` or `role = standardDeviation`.
 
 `relatedColumn` contains the final ODV target column name of the measured
 variable to which the auxiliary column belongs.
@@ -426,7 +426,7 @@ Example:
     {
       "@type": "PropertyValue",
       "name": "role",
-      "value": "error"
+      "value": "standardDeviation"
     },
     {
       "@type": "PropertyValue",
@@ -572,7 +572,7 @@ SHOULD use the direct mapping and do not need time-component assembly.
 }
 ```
 
-### Error or standard-deviation column
+### Standard-deviation column
 
 ```json
 {
@@ -584,7 +584,7 @@ SHOULD use the direct mapping and do not need time-component assembly.
     {
       "@type": "PropertyValue",
       "name": "role",
-      "value": "error"
+      "value": "standardDeviation"
     },
     {
       "@type": "PropertyValue",
@@ -657,7 +657,7 @@ A converter SHOULD:
    `targetColumn`
 6. If needed, assemble `yyyy-mm-ddThh:mm:ss.sss` from `role = timeComponent`
    columns using `dateTimeComponent`; `targetColumn` is inferred for these columns
-7. Attach auxiliary columns with `role = quality` or `role = error` to their
+7. Attach auxiliary columns with `role = quality` or `role = standardDeviation` to their
    `relatedColumn`
 8. Apply ODV-specific requirements
 9. Emit an ODV Generic Spreadsheet

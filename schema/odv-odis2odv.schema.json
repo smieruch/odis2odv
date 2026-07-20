@@ -504,7 +504,7 @@
       ]
     },
     "ColumnMapping": {
-      "description": "One mapping item for one source column. Data and metadata columns map to an ODV target column. Auxiliary columns such as quality flags and errors may instead refer to a related measured column.",
+      "description": "One mapping item for one source column. Data and metadata columns map to an ODV target column. Auxiliary columns such as quality flags and standard deviations may instead refer to a related measured column.",
       "type": "object",
       "required": [
         "@type",
@@ -525,7 +525,7 @@
           "type": "string"
         },
         "additionalProperty": {
-          "description": "Per-column mapping metadata. Columns with role 'data' or 'meta' require targetColumn. Auxiliary columns with role 'quality' or 'error' require relatedColumn and do not require targetColumn. Columns with role 'timeComponent' require dateTimeComponent and are used to assemble the optional ODV timestamp column yyyy-mm-ddThh:mm:ss.sss; targetColumn is not required for timeComponent columns.",
+          "description": "Per-column mapping metadata. Columns with role 'data' or 'meta' require targetColumn. Auxiliary columns with role 'quality' or 'standardDeviation' require relatedColumn and do not require targetColumn. Columns with role 'timeComponent' require dateTimeComponent and are used to assemble the optional ODV timestamp column yyyy-mm-ddThh:mm:ss.sss; targetColumn is not required for timeComponent columns.",
           "type": "array",
           "minItems": 1,
           "items": {
@@ -599,7 +599,7 @@
                     "value": {
                       "enum": [
                         "quality",
-                        "error"
+                        "standardDeviation"
                       ]
                     }
                   }
@@ -818,7 +818,7 @@
                   "meta",
                   "data",
                   "quality",
-                  "error",
+                  "standardDeviation",
                   "timeComponent"
                 ],
                 "description": "Column role. Columns used to assemble an ODV timestamp use role=timeComponent; in that case dateTimeComponent is required and targetColumn is inferred as yyyy-mm-ddThh:mm:ss.sss."
@@ -884,7 +884,7 @@
           "then": {
             "properties": {
               "value": {
-                "description": "Exact source column name of the measured variable to which this auxiliary column belongs. Used for quality flags, errors, standard deviations, and similar auxiliary variables.",
+                "description": "Exact source column name of the measured variable to which this auxiliary column belongs. Used for quality flags, standard deviations, and similar auxiliary variables.",
                 "type": "string",
                 "minLength": 1
               }

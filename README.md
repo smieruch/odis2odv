@@ -102,7 +102,7 @@ inside PropertyValue
 │     ├── meta
 │     ├── data
 │     ├── quality
-│     ├── error
+│     ├── standardDeviation
 │     └── timeComponent
 │
 ├── relatedColumn
@@ -429,7 +429,7 @@ are handled separately using `role = timeComponent`.
 }
 ```
 
-#### Errors and standard deviations
+#### Standard deviations
 
 ``` json
 {
@@ -439,7 +439,7 @@ are handled separately using `role = timeComponent`.
     {
       "@type": "PropertyValue",
       "name": "role",
-      "value": "error"
+      "value": "standardDeviation"
     },
     {
       "@type": "PropertyValue",

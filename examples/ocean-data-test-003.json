@@ -7,7 +7,7 @@
   "identifier": "https://github.com/smieruch/odis2odv/tree/main/examples/ocean-data-test-003",
   "url": "https://github.com/smieruch/odis2odv/tree/main/examples",
   "name": "ODIS2ODV example profile dataset",
-  "description": "Small tutorial dataset demonstrating how schema.org JSON-LD can describe the deterministic conversion of a tab-separated ocean profile table into an ODV Generic Spreadsheet. The example includes metadata columns, measured data columns, one quality flag column, and one error/standard-deviation column.",
+  "description": "Small tutorial dataset demonstrating how schema.org JSON-LD can describe the deterministic conversion of a tab-separated ocean profile table into an ODV Generic Spreadsheet. The example includes metadata columns, measured data columns, one quality flag column, and one standard-deviation column.",
   "keywords": [
     "ODIS2ODV",
     "ODV-compatible",
@@ -241,7 +241,7 @@
         {
           "@type": "PropertyValue",
           "name": "role",
-          "value": "error"
+          "value": "standardDeviation"
         },
         {
           "@type": "PropertyValue",

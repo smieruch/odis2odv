@@ -6,17 +6,27 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
+#include <qjsonobject.h>
 #include <qjsonvalue.h>
+#include <QJsonArray>
 
 
 //======================================================================
 // Function Declarations
 //======================================================================
-QByteArray readLocalFile(const QString& source, QTextStream& errorOutput);
+QByteArray readLocalFile(const QString &source,
+                         QTextStream& errorOutput);
+
 QString getRequiredString(const QJsonObject& object,
                           const QString& key,
                           QTextStream& errorOutput);
 
+QJsonObject getRequiredObject(const QJsonObject& object,
+                              const QString& key,
+                              QTextStream& errorOutput);
+QJsonArray getRequiredArray(const QJsonObject& object,
+                            const QString& key,
+                            QTextStream& errorOutput);
 
 //======================================================================
 // main
@@ -60,6 +70,7 @@ int main(int argc, char *argv[])
     const QString source = args.at(1);
       
     if (command == "inspect") {
+      //read the local file
       const QByteArray data = readLocalFile(source, out);      
       
       if (data.isEmpty()) {
@@ -70,6 +81,7 @@ int main(int argc, char *argv[])
       out << source << "\n";
       out << "Loaded " << data.size() << " bytes\n";
 
+      //check if it is JSON
       QJsonParseError parseError;
 
       const QJsonDocument document = QJsonDocument::fromJson(data, &parseError);
@@ -81,11 +93,13 @@ int main(int argc, char *argv[])
 	return 1;
       }
 
+      //check if it is an object
       if (!document.isObject()) {
         out << "JSON root is not an object.\n";
 	return 1;
       }
 
+      //get JSON root object, i.e. all
       const QJsonObject root = document.object();
 
 
@@ -93,6 +107,7 @@ int main(int argc, char *argv[])
       out << "Top-level JSON object\n";
       out << "Number of properties: " << root.size() << "\n";
 
+      //get type and name
       const QString type = getRequiredString(root, "@type", out);
 
       if (type.isEmpty()) {
@@ -107,8 +122,37 @@ int main(int argc, char *argv[])
       
       out << "@type: " << type << "\n";
       out << "Name: " << name << "\n";
-      
 
+      //get distribution array, it has the data download link
+      const QJsonArray distribution = getRequiredArray(root, "distribution", out);
+
+      if (distribution.isEmpty()) {
+	out << "Property is an empty array: distribution\n";
+	return 1;
+      }
+
+      const QJsonValue firstDistribution = distribution.at(0);
+
+      if (!firstDistribution.isObject()) {
+	out << "First distribution entry is not a JSON object\n";
+      }
+
+      const QJsonObject dataDownload = firstDistribution.toObject();
+
+      // print out the dataDownload to check what's inside
+      QJsonDocument dataDownloadDocument(dataDownload);
+      out << "dataDownload:\n";
+      out << dataDownloadDocument.toJson(QJsonDocument::Indented) << "\n";
+
+      
+      const QString contentUrl = getRequiredString(dataDownload, "contentUrl", out);
+
+      if (contentUrl.isEmpty()) {
+	return 1;
+      }
+
+      out << "Content Url: " << contentUrl << "\n";
+      
       return 0;
     }
     else if (command == "convert") {
@@ -198,4 +242,79 @@ QString getRequiredString(const QJsonObject& object,
     }
 
     return text;
+}
+
+
+//----------------------------------------------------------------------
+// getRequiredObject()
+//
+// Reads a mandatory object property from a JSON object.
+//
+// The function verifies that the property
+//   - exists, and
+//   - is a JSON object.
+//
+// Responsibility:
+//     JSON object -> validated QJsonObject
+//----------------------------------------------------------------------
+QJsonObject getRequiredObject(const QJsonObject& object,
+                              const QString& key,
+                              QTextStream& errorOutput)
+{
+    const QJsonValue value = object.value(key);
+
+    if (value.isUndefined()) {
+      errorOutput << "Missing required property: "
+		  << key
+		  << "\n";
+      
+      return {};
+    }
+
+    if (!value.isObject()) {
+      errorOutput << "Property is not a JSON object: "
+		  << key
+		  << "\n";
+      
+      return {};
+    }
+    
+    return value.toObject();
+}
+
+
+//----------------------------------------------------------------------
+// getRequiredArray()
+//
+// Reads a mandatory array property from a JSON object.
+//
+// The function verifies that the property
+//   - exists, and
+//   - is a JSON array.
+//
+// Responsibility:
+//     JSON object -> validated QJsonArray
+//----------------------------------------------------------------------
+
+QJsonArray getRequiredArray(const QJsonObject& object,
+                            const QString& key,
+                            QTextStream& errorOutput)
+{
+    const QJsonValue value = object.value(key);
+
+    if (value.isUndefined()) {
+        errorOutput << "Missing required property: "
+                    << key
+                    << "\n";
+        return {};
+    }
+
+    if (!value.isArray()) {
+        errorOutput << "Property is not a JSON array: "
+                    << key
+                    << "\n";
+        return {};
+    }
+
+    return value.toArray();
 }
