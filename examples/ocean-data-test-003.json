@@ -40,7 +40,7 @@
     {
       "@type": "PropertyValue",
       "name": "primaryVariableTargetColumn",
-      "value": "Pressure [dbar]"
+      "value": "Pressure"
     },
     {
       "@type": "PropertyValue",
@@ -50,7 +50,7 @@
     {
       "@type": "PropertyValue",
       "name": "fillValue",
-      "value": null
+      "value": ""
     }
   ],
   "variableMeasured": [
@@ -100,7 +100,17 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Longitude [degrees_east]"
+          "value": "Longitude"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unit",
+          "value": "degrees_east"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unitID",
+          "value": "https://vocab.nerc.ac.uk/collection/P06/current/UAAA/"
         }
       ]
     },
@@ -114,7 +124,17 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Latitude [degrees_north]"
+          "value": "Latitude"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unit",
+          "value": "degrees_north"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unitID",
+          "value": "https://vocab.nerc.ac.uk/collection/P06/current/UAAA/"
         }
       ]
     },
@@ -172,7 +192,17 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Pressure [dbar]"
+          "value": "Pressure"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unit",
+          "value": "dbar"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unitID",
+          "value": "https://vocab.nerc.ac.uk/collection/P06/current/UPDB/"
         },
         {
           "@type": "PropertyValue",
@@ -196,7 +226,17 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Temperature [degC]"
+          "value": "Temperature"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unit",
+          "value": "degC"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unitID",
+          "value": "https://vocab.nerc.ac.uk/collection/P06/current/UPAA/"
         },
         {
           "@type": "PropertyValue",
@@ -228,7 +268,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Temperature [degC]"
+          "value": "Temperature"
         }
       ]
     },
@@ -246,7 +286,7 @@
         {
           "@type": "PropertyValue",
           "name": "relatedColumn",
-          "value": "Temperature [degC]"
+          "value": "Temperature"
         }
       ]
     },
@@ -260,7 +300,17 @@
         {
           "@type": "PropertyValue",
           "name": "targetColumn",
-          "value": "Practical Salinity [psu]"
+          "value": "Practical Salinity"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unit",
+          "value": "psu"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "unitID",
+          "value": "https://vocab.nerc.ac.uk/collection/P06/current/PSUX/"
         },
         {
           "@type": "PropertyValue",

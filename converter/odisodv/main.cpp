@@ -10,18 +10,30 @@
 #include <qjsonobject.h>
 #include <qjsonvalue.h>
 #include <QJsonArray>
+#include <QMap>
+#include <qmap.h>
 
 //======================================================================
-// Data Structures
+// Helper Types
 //======================================================================
 
-struct DatasetProperties
-{
-    QString dataField;
+enum class EmptyPolicy { Reject, Allow };
+
+//======================================================================
+// Structs
+//======================================================================
+
+struct VariableDefinition {
+    QString sourceColumn;
+    QString description;
+    QString unitText;
+    QString propertyID;
+
+    QString targetColumn;
     QString dataType;
-    QString primaryVariableTargetColumn;
-    QString columnSeparator;
-    QJsonValue fillValue;
+    QString role;
+    QString relatedColumn;
+    QString qualityFlagScheme;
 };
 
 //======================================================================
@@ -30,18 +42,26 @@ struct DatasetProperties
 QByteArray readLocalFile(const QString &source,
                          QTextStream& errorOutput);
 
-QString getRequiredString(const QJsonObject& object,
-                          const QString& key,
-                          QTextStream& errorOutput);
+QString getRequiredString(const QJsonObject &object, const QString &key,
+                          QTextStream &errorOutput,
+                          EmptyPolicy emptyPolicy = EmptyPolicy::Reject);
 
 QJsonObject getRequiredObject(const QJsonObject& object,
                               const QString& key,
                               QTextStream& errorOutput);
+
 QJsonArray getRequiredArray(const QJsonObject& object,
                             const QString& key,
                             QTextStream& errorOutput);
-void inspectVariableMeasured(const QJsonArray &variables,
-                             QTextStream& out);
+
+bool parseDatasetProperties(const QJsonArray& properties,
+			    QMap<QString, QString>& result,
+			    QTextStream& errorOutput);
+
+bool parseVariables(const QJsonArray& variables,
+                    QList<VariableDefinition>& result,
+                    QTextStream& errorOutput);
+
 //======================================================================
 // main
 //======================================================================
@@ -51,7 +71,9 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("odisodv");
     QCoreApplication::setApplicationVersion("0.1.0");
 
-    //command line parser object
+    //----------------------------------------------------------------------
+    // command line parser object
+    //----------------------------------------------------------------------
     QCommandLineParser parser;
     parser.setApplicationDescription("ODIS/ODV converter");
     parser.addHelpOption();
@@ -62,11 +84,9 @@ int main(int argc, char *argv[])
 
     //read the command line arguments
     parser.process(app);
-
     
     //output object
     QTextStream out(stdout);
-    
     
     const QStringList args = parser.positionalArguments();
     
@@ -82,7 +102,13 @@ int main(int argc, char *argv[])
 
     const QString command = args.at(0);
     const QString source = args.at(1);
-      
+    //----------------------------------------------------------------------
+
+
+    
+    //----------------------------------------------------------------------
+    // now we start processing, first command: inspect
+    //----------------------------------------------------------------------
     if (command == "inspect") {
       //read the local file
       const QByteArray data = readLocalFile(source, out);      
@@ -116,7 +142,6 @@ int main(int argc, char *argv[])
       //get JSON root object, i.e. all
       const QJsonObject root = document.object();
 
-
       out << "Valid JSON\n";
       out << "Top-level JSON object\n";
       out << "Number of properties: " << root.size() << "\n";
@@ -136,7 +161,9 @@ int main(int argc, char *argv[])
       
       out << "@type: " << type << "\n";
       out << "Name: " << name << "\n";
+      //----------------------------------------------------------------------
 
+      
       //get distribution array, it has the data download link
       const QJsonArray distribution = getRequiredArray(root, "distribution", out);
 
@@ -156,8 +183,7 @@ int main(int argc, char *argv[])
       // print out the dataDownload to check what's inside
       QJsonDocument dataDownloadDocument(dataDownload);
       out << "dataDownload:\n";
-      out << dataDownloadDocument.toJson(QJsonDocument::Indented) << "\n";
-
+      // out << dataDownloadDocument.toJson(QJsonDocument::Indented) << "\n";
       
       const QString contentUrl = getRequiredString(dataDownload, "contentUrl", out);
 
@@ -166,6 +192,26 @@ int main(int argc, char *argv[])
       }
 
       out << "Content Url: " << contentUrl << "\n";
+      
+      //get additionalProperty that contain the DatasetProperties
+      const QJsonArray additionalProperty = getRequiredArray(root, "additionalProperty", out);
+
+      if (additionalProperty.isEmpty()) {
+	out << "Property is an empty array: additionalProperty\n";
+	return 1;
+      }
+
+      //Map
+      QMap<QString, QString> datasetProperties;
+
+      if (!parseDatasetProperties(additionalProperty, datasetProperties,
+                                    out)) {
+        return 1;
+      }
+
+      
+
+
       
       return 0;
     }
@@ -222,37 +268,37 @@ QByteArray readLocalFile(const QString& source, QTextStream& errorOutput)
 //----------------------------------------------------------------------
 // getRequiredString()
 //
-// Reads a mandatory string property from a JSON object.
+// Reads a mandatory string property.
 //
 // The function verifies that the property
 //   - exists,
 //   - is a JSON string, and
-//   - is not empty.
+//   - is non-empty unless EmptyPolicy::Allow is specified.
 //
 // Responsibility:
 //     JSON object -> validated QString
 //----------------------------------------------------------------------
-QString getRequiredString(const QJsonObject& object,
-                          const QString& key,
-                          QTextStream& errorOutput)
+QString getRequiredString(const QJsonObject &object, const QString &key,
+                          QTextStream &errorOutput,
+                          EmptyPolicy emptyPolicy)
 {
     const QJsonValue value = object.value(key);
 
     if (value.isUndefined()) {
         errorOutput << "Missing required property: " << key << "\n";
-        return {};
+        return QString();
     }
 
     if (!value.isString()) {
         errorOutput << "Property is not a string: " << key << "\n";
-        return {};
+	return QString();
     }
 
     const QString text = value.toString();
 
-    if (text.isEmpty()) {
+    if (emptyPolicy == EmptyPolicy::Reject && text.isEmpty()) {
         errorOutput << "Property is an empty string: " << key << "\n";
-        return {};
+	return QString();
     }
 
     return text;
@@ -282,7 +328,7 @@ QJsonObject getRequiredObject(const QJsonObject& object,
 		  << key
 		  << "\n";
       
-      return {};
+      return QJsonObject();
     }
 
     if (!value.isObject()) {
@@ -290,7 +336,7 @@ QJsonObject getRequiredObject(const QJsonObject& object,
 		  << key
 		  << "\n";
       
-      return {};
+      return QJsonObject();
     }
     
     return value.toObject();
@@ -320,34 +366,66 @@ QJsonArray getRequiredArray(const QJsonObject& object,
         errorOutput << "Missing required property: "
                     << key
                     << "\n";
-        return {};
+        return QJsonArray();
     }
 
     if (!value.isArray()) {
         errorOutput << "Property is not a JSON array: "
                     << key
                     << "\n";
-        return {};
+	return QJsonArray();
     }
 
     return value.toArray();
 }
 
 
-//----------------------------------------------------------------------
-// inspectVariableMeasured()
+//---------------------------------------------------------------------
+// parseDatasetProperties()
 //
-//----------------------------------------------------------------------
-
-void inspectVariableMeasured(const QJsonArray& variables, QTextStream& out)
+// Inspects the dataset-level additionalProperty array.
+//
+// Responsibility:
+//     additionalProperty array -> validated property names
+//---------------------------------------------------------------------
+bool parseDatasetProperties(const QJsonArray& properties,
+			    QMap<QString, QString>& result,
+                              QTextStream& errorOutput)
 {
-  for (const QJsonValue& value : variables) {
+
+  
+  for (const QJsonValue& value : properties) {
+
+    
     if (!value.isObject()) {
-      out << "Property is not an object: " << "\n";
+      errorOutput << "Dataset additionalProperty entry is not a JSON object\n";
+      return false;
     }
+    
+    const QJsonObject propertyObject = value.toObject();
+
+    const QString propertyName = getRequiredString(propertyObject, "name", errorOutput);
+
+    if (propertyName.isNull()) {
+      return false;
+    }
+
+
+    const QString propertyValue = getRequiredString(propertyObject, "value", errorOutput, EmptyPolicy::Allow);
+
+    if (propertyValue.isNull()) {
+      return false;
+    }
+    
+
+
+    result.insert(propertyName, propertyValue);
+    
+    errorOutput << "Dataset property: " << propertyName << " = " << propertyValue <<  "\n";
+
   }
   
-  
-  
-  
+  return true;
 }
+
+
