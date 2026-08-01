@@ -17,7 +17,7 @@
 // Helper Types
 //======================================================================
 
-enum class EmptyPolicy { Reject, Allow };
+enum class EmptyPolicy { NotAllow, Allow };
 
 //======================================================================
 // Structs
@@ -39,12 +39,15 @@ struct VariableDefinition {
 //======================================================================
 // Function Declarations
 //======================================================================
+bool parseJsonDocument(const QByteArray &data, QJsonObject &root,
+                       QTextStream &errorOutput);
+
 QByteArray readLocalFile(const QString &source,
                          QTextStream& errorOutput);
 
 QString getRequiredString(const QJsonObject &object, const QString &key,
                           QTextStream &errorOutput,
-                          EmptyPolicy emptyPolicy = EmptyPolicy::Reject);
+                          EmptyPolicy emptyPolicy = EmptyPolicy::NotAllow);
 
 QJsonObject getRequiredObject(const QJsonObject& object,
                               const QString& key,
@@ -107,60 +110,59 @@ int main(int argc, char *argv[])
 
     
     //----------------------------------------------------------------------
-    // now we start processing, first command: inspect
+    // now we start processing, read file
+    //----------------------------------------------------------------------
+    const QByteArray data = readLocalFile(source, out);      
+      
+    if (data.isEmpty()) {
+      return 1;
+    }
+    
+    out << "Read local file:\n";
+    out << source << "\n";
+    out << "Loaded " << data.size() << " bytes\n";
+
+
+
+    //----------------------------------------------------------------------
+    // first command inspect
     //----------------------------------------------------------------------
     if (command == "inspect") {
-      //read the local file
-      const QByteArray data = readLocalFile(source, out);      
-      
-      if (data.isEmpty()) {
-	return 1;
+
+      QJsonObject root;
+
+      //check if it json and extract the root object
+      if (!parseJsonDocument(data, root, out)) {
+        return 1;
       }
-
-      out << "Inspecting source:\n";
-      out << source << "\n";
-      out << "Loaded " << data.size() << " bytes\n";
-
-      //check if it is JSON
-      QJsonParseError parseError;
-
-      const QJsonDocument document = QJsonDocument::fromJson(data, &parseError);
-
-      if (parseError.error != QJsonParseError::NoError) {
-        out << "Invalid JSON:\n";
-        out << parseError.errorString() << "\n";
-        out << "Offset: " << parseError.offset << "\n";
-	return 1;
-      }
-
-      //check if it is an object
-      if (!document.isObject()) {
-        out << "JSON root is not an object.\n";
-	return 1;
-      }
-
-      //get JSON root object, i.e. all
-      const QJsonObject root = document.object();
 
       out << "Valid JSON\n";
       out << "Top-level JSON object\n";
       out << "Number of properties: " << root.size() << "\n";
+      
 
-      //get type and name
-      const QString type = getRequiredString(root, "@type", out);
+      //get type and name and schemaVersion
+      const QString type = getRequiredString(root, "@type", out, EmptyPolicy::NotAllow);
 
       if (type.isEmpty()) {
 	return 1;
       }
       
-      const QString name = getRequiredString(root, "name", out);
+      const QString name = getRequiredString(root, "name", out, EmptyPolicy::NotAllow);
       
       if (name.isEmpty()) {
+	return 1;
+      }
+
+      const QString schemaVersion = getRequiredString(root, "schemaVersion", out, EmptyPolicy::NotAllow);
+      
+      if (schemaVersion.isEmpty()) {
 	return 1;
       }
       
       out << "@type: " << type << "\n";
       out << "Name: " << name << "\n";
+      out << "schemaVersion: " << schemaVersion << "\n";
       //----------------------------------------------------------------------
 
       
@@ -236,9 +238,52 @@ int main(int argc, char *argv[])
 }
 
 
+
 //======================================================================
 // Helper Functions
 //======================================================================
+
+
+//----------------------------------------------------------------------
+// parseJsonDocument()
+//
+// Parses a JSON document from raw bytes.
+//
+// The function verifies that
+//   - the input contains valid JSON, and
+//   - the JSON root is an object.
+//
+// Responsibility:
+//     raw JSON bytes -> validated QJsonObject
+//----------------------------------------------------------------------
+bool parseJsonDocument(const QByteArray &data, QJsonObject &root,
+                       QTextStream &errorOutput)
+{
+  //check if it is JSON
+  QJsonParseError parseError;
+  
+  const QJsonDocument document = QJsonDocument::fromJson(data, &parseError);
+  
+  if (parseError.error != QJsonParseError::NoError) {
+    errorOutput << "Invalid JSON:\n";
+    errorOutput << parseError.errorString() << "\n";
+    errorOutput << "Offset: " << parseError.offset << "\n";
+    return false;
+  }
+
+  //check if it is an object
+  if (!document.isObject()) {
+    errorOutput << "JSON root is not an object.\n";
+    return 1;
+  }
+
+  //get JSON root object, i.e. all
+  root = document.object();
+
+
+  return true;
+
+}
 
 
 //----------------------------------------------------------------------
@@ -296,7 +341,7 @@ QString getRequiredString(const QJsonObject &object, const QString &key,
 
     const QString text = value.toString();
 
-    if (emptyPolicy == EmptyPolicy::Reject && text.isEmpty()) {
+    if (emptyPolicy == EmptyPolicy::NotAllow && text.isEmpty()) {
         errorOutput << "Property is an empty string: " << key << "\n";
 	return QString();
     }
@@ -378,6 +423,13 @@ QJsonArray getRequiredArray(const QJsonObject& object,
 
     return value.toArray();
 }
+
+
+
+
+//======================================================================
+// Parsing Functions
+//======================================================================
 
 
 //---------------------------------------------------------------------

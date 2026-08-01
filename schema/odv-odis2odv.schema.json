@@ -86,12 +86,12 @@
       }
     },
     "additionalProperty": {
-      "description": "Dataset-level ODV collection metadata and conversion hints. Required entries: dataField, dataType, primaryVariableTargetColumn, and columnSeparator. dataField and dataType must use supported ODV controlled values. fillValue and timeZone are optional.",
+      "description": "Dataset-level ODV collection metadata and source-table parsing metadata. Required entries: dataField, dataType, primaryVariableTargetColumn, columnSeparator, columnNameRow, and dataStartRow. columnNameRow and dataStartRow are 1-based row numbers. fillValue and timeZone are optional.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/DatasetAdditionalProperty"
       },
-      "minItems": 4,
+      "minItems": 6,
       "allOf": [
         {
           "contains": {
@@ -164,11 +164,47 @@
               }
             }
           }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": [
+              "@type",
+              "name",
+              "value"
+            ],
+            "properties": {
+              "@type": {
+                "const": "PropertyValue"
+              },
+              "name": {
+                "const": "columnNameRow"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": [
+              "@type",
+              "name",
+              "value"
+            ],
+            "properties": {
+              "@type": {
+                "const": "PropertyValue"
+              },
+              "name": {
+                "const": "dataStartRow"
+              }
+            }
+          }
         }
       ]
     },
     "variableMeasured": {
-      "description": "Column mapping list. Required ODV core target columns: Longitude [degrees_east] and Latitude [degrees_north]. Cruise, Station, and yyyy-mm-ddThh:mm:ss.sss are strongly recommended but optional. The ODV timestamp may be mapped directly or assembled from role=timeComponent columns. Type is optional.",
+      "description": "Column mapping list. Required ODV core target variables: Longitude and Latitude. Cruise, Station, and yyyy-mm-ddThh:mm:ss.sss are strongly recommended but optional. The ODV timestamp may be mapped directly or assembled from role=timeComponent columns. Type is optional.",
       "type": "array",
       "minItems": 1,
       "items": {
@@ -204,7 +240,7 @@
                       "const": "targetColumn"
                     },
                     "value": {
-                      "const": "Longitude [degrees_east]"
+                      "const": "Longitude"
                     }
                   }
                 }
@@ -241,7 +277,7 @@
                       "const": "targetColumn"
                     },
                     "value": {
-                      "const": "Latitude [degrees_north]"
+                      "const": "Latitude"
                     }
                   }
                 }
@@ -294,7 +330,7 @@
       "additionalProperties": true
     },
     "DatasetAdditionalProperty": {
-      "description": "Dataset-level ODV collection metadata and conversion hints expressed as schema.org PropertyValue.",
+      "description": "Dataset-level ODV collection metadata and source-table parsing metadata expressed as schema.org PropertyValue.",
       "type": "object",
       "required": [
         "@type",
@@ -313,7 +349,9 @@
             "primaryVariableTargetColumn",
             "columnSeparator",
             "fillValue",
-            "timeZone"
+            "timeZone",
+            "columnNameRow",
+            "dataStartRow"
           ]
         },
         "value": {
@@ -500,11 +538,59 @@
               "value"
             ]
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "columnNameRow"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "1-based row number containing the source column names."
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "dataStartRow"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "1-based row number containing the first source-data record."
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
         }
       ]
     },
     "ColumnMapping": {
-      "description": "One mapping item for one source column. Data and metadata columns map to an ODV target column. Auxiliary columns such as quality flags and standard deviations may instead refer to a related measured column.",
+      "description": "One mapping item for one source column. targetColumn defines the ODV variable name. For columns with a physical unit, unitText provides the concise human-readable unit name, unit defines the compact ODV output unit label, and unitID provides the persistent machine-readable unit identifier. These unit fields are optional and should be omitted when no physical unit applies. Auxiliary columns such as quality flags and standard deviations may instead refer to a related measured column.",
       "type": "object",
       "required": [
         "@type",
@@ -521,7 +607,7 @@
           "minLength": 1
         },
         "description": {
-          "description": "Optional schema.org description of the measured variable. Use this field for human-readable parameter definitions, explanations, method notes, or provider comments. This is the preferred place for variable descriptions instead of creating custom additionalProperty entries such as 'comment'.",
+          "description": "Optional schema.org description of the measured variable. Use this field for human-readable parameter definitions, explanations, method notes, provider comments, and unit provenance or display conventions. For example, explain here when the original source notation differs from the compact ODV unit label. This is the preferred place for such explanations instead of overloading unitText or creating custom additionalProperty entries such as 'comment'.",
           "type": "string"
         },
         "additionalProperty": {
@@ -719,12 +805,16 @@
           "description": "Optional schema.org propertyID for a persistent semantic identifier of the measured variable or property. Prefer resolvable vocabulary URIs, for example NERC P01 URIs. Do not use this field for free-text comments; use description for human-readable explanations.",
           "type": "string",
           "minLength": 1
+        },
+        "unitText": {
+          "description": "Optional schema.org unitText containing the concise human-readable name of the physical unit, for example 'degrees Celsius', 'decibar', or 'Number per millilitre'. If no physical unit applies, omit unitText rather than using an empty string. If present, it should contain the unit name itself, not a sentence about provenance, conversion, or ODV display conventions. Such explanations belong in description. unitText is informational and is not used to construct the ODV output variable name or compact ODV unit label.",
+          "type": "string"
         }
       },
       "additionalProperties": true
     },
     "ColumnAdditionalProperty": {
-      "description": "Per-column metadata expressed as schema.org PropertyValue. Use native PropertyValue.propertyID for persistent semantic identifiers such as NERC P01 URIs. ODIS2ODV profile values include targetColumn, role, qualityFlagScheme, relatedColumn, and dateTimeComponent.",
+      "description": "Per-column metadata expressed as schema.org PropertyValue. ODIS2ODV profile values include targetColumn, unit, unitID, dataType, role, qualityFlagScheme, relatedColumn, and dateTimeComponent. The compact ODV unit label is stored in unit; the corresponding human-readable unit name is stored in the parent ColumnMapping.unitText.",
       "type": "object",
       "required": [
         "@type",
@@ -739,6 +829,8 @@
           "type": "string",
           "enum": [
             "targetColumn",
+            "unit",
+            "unitID",
             "dataType",
             "role",
             "qualityFlagScheme",
@@ -765,7 +857,7 @@
               "value": {
                 "type": "string",
                 "minLength": 1,
-                "description": "ODV output column name. Required ODV core target columns are Longitude [degrees_east] and Latitude [degrees_north]. Cruise and Station are strongly recommended. The time target column yyyy-mm-ddThh:mm:ss.sss is strongly recommended but optional. The ODV Type column is optional and may contain values such as C for CTD and B for bottle measurements."
+                "description": "ODV output variable name without a unit suffix. Required core target variables are Longitude and Latitude. Cruise, Station, and yyyy-mm-ddThh:mm:ss.sss are strongly recommended where applicable. Type is optional."
               }
             },
             "required": [
@@ -790,7 +882,7 @@
                 "type": "string",
                 "enum": [
                   "Text",
-                  "Number",
+                  "Number"
                 ]
               }
             },
@@ -884,7 +976,7 @@
           "then": {
             "properties": {
               "value": {
-                "description": "Exact source column name of the measured variable to which this auxiliary column belongs. Used for quality flags, standard deviations, and similar auxiliary variables.",
+                "description": "Exact targetColumn value of the measured variable to which this auxiliary column belongs. Do not use the original source-column name or a unit-qualified label.",
                 "type": "string",
                 "minLength": 1
               }
@@ -921,6 +1013,55 @@
                   "date",
                   "time"
                 ]
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "unit"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Compact unit label used in ODV output, for example degC, dbar, degrees_east, or 1/ml. This property is optional and should be omitted when no physical unit applies. If present, it must be a non-empty string and may differ from the human-readable unit name in unitText."
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "unitID"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "format": "uri",
+                "description": "Persistent machine-readable unit identifier. Prefer a resolvable vocabulary URI such as a NERC P06 URI. This property is optional and should be omitted when no physical unit applies. If present, it identifies the same unit described by unitText and rendered compactly by unit."
               }
             },
             "required": [

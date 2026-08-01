@@ -3,6 +3,7 @@
     "@vocab": "https://schema.org/"
   },
   "@type": "Dataset",
+  "schemaVersion": "1.0",
   "@id": "https://github.com/smieruch/odis2odv/blob/main/examples/ocean-data-test-003.json#odis2odv",
   "identifier": "https://github.com/smieruch/odis2odv/tree/main/examples/ocean-data-test-003",
   "url": "https://github.com/smieruch/odis2odv/tree/main/examples",
@@ -51,6 +52,16 @@
       "@type": "PropertyValue",
       "name": "fillValue",
       "value": ""
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "columnNameRow",
+      "value": 1
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "dataStartRow",
+      "value": 2
     }
   ],
   "variableMeasured": [
@@ -93,8 +104,8 @@
     {
       "@type": "PropertyValue",
       "name": "Lon",
-      "description": "Longitude of the profile location.",
-      "unitText": "Original source unit information: degrees east.",
+      "description": "Longitude of the profile location. The original source unit is degrees east; the ODV target uses the compact unit label degrees_east.",
+      "unitText": "degrees east",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/",
       "additionalProperty": [
         {
@@ -117,8 +128,8 @@
     {
       "@type": "PropertyValue",
       "name": "Lat",
-      "description": "Latitude of the profile location.",
-      "unitText": "Original source unit information: degrees north.",
+      "description": "Latitude of the profile location. The original source unit is degrees north; the ODV target uses the compact unit label degrees_north.",
+      "unitText": "degrees north",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALATZZ01/",
       "additionalProperty": [
         {
@@ -185,8 +196,8 @@
     {
       "@type": "PropertyValue",
       "name": "Pressure (original) [decibar]",
-      "description": "Sea pressure of the profile observation.",
-      "unitText": "Original source unit is decibar. The ODV target column defines the output unit label dbar.",
+      "description": "Sea pressure of the profile observation. The original source unit is decibar; the ODV target uses the compact unit label dbar.",
+      "unitText": "decibar",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/PRESPR01/",
       "additionalProperty": [
         {
@@ -219,8 +230,8 @@
     {
       "@type": "PropertyValue",
       "name": "Temperature (original) [degrees_Celsius]",
-      "description": "Sea water temperature.",
-      "unitText": "Original source unit is degrees Celsius. The ODV target column defines the output unit label degC.",
+      "description": "Sea water temperature. The original source unit is degrees Celsius; the ODV target uses the compact unit label degC.",
+      "unitText": "degrees Celsius",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01/",
       "additionalProperty": [
         {
@@ -275,8 +286,8 @@
     {
       "@type": "PropertyValue",
       "name": "Temperature std",
-      "description": "Standard deviation of the temperature observation.",
-      "unitText": "Same physical unit as the related temperature variable.",
+      "description": "Standard deviation of the temperature observation. It uses the same physical unit as the related temperature variable.",
+      "unitText": "degrees Celsius",
       "additionalProperty": [
         {
           "@type": "PropertyValue",
@@ -293,8 +304,8 @@
     {
       "@type": "PropertyValue",
       "name": "Practical Salinity (original) [psu]",
-      "description": "Practical salinity of the profile observation.",
-      "unitText": "Original source unit is practical salinity units.",
+      "description": "Practical salinity of the profile observation. The original source unit is practical salinity units; the ODV target uses the compact unit label psu.",
+      "unitText": "practical salinity units",
       "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/PSALPR01/",
       "additionalProperty": [
         {

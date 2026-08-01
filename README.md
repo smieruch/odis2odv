@@ -68,8 +68,8 @@ ODIS / schema.org discovery layer
 ├── DataDownload
 ├── variableMeasured
 ├── description
-├── unitText        (optional source/provider unit notes)
-└── propertyID     (semantic identifier, e.g. NERC P01)
+├── unitText        (optional human-readable unit name)
+└── propertyID      (semantic variable identifier, e.g. NERC P01)
         │
         ↓
 FAIR discovery
@@ -94,8 +94,12 @@ inside PropertyValue
 │     └── Trajectories
 │
 ├── targetColumn
+├── unit
+├── unitID
 ├── primaryVariableTargetColumn
 ├── columnSeparator
+├── columnNameRow
+├── dataStartRow
 ├── fillValue
 │
 ├── role
@@ -233,7 +237,7 @@ For each source column:
 -   `PropertyValue.name`\
     → exact header of the **source column**
 -   `additionalProperty(name="targetColumn")`\
-    → header of the **ODV output column**
+    → name of the **ODV output variable**
 
 Example:
 
@@ -246,7 +250,7 @@ Example:
     {
       "@type": "PropertyValue",
       "name": "targetColumn",
-      "value": "Longitude [degrees_east]"
+      "value": "Longitude"
     }
   ]
 }
@@ -260,8 +264,8 @@ Example:
 
 The following ODV target columns are mandatory for ODIS2ODV conversion:
 
--   `Longitude [degrees_east]`
--   `Latitude [degrees_north]`
+-   `Longitude`
+-   `Latitude`
 
 The following ODV target columns are strongly recommended but optional:
 
@@ -278,8 +282,8 @@ For the known ODV metadata columns:
 
 -   `Cruise`
 -   `Station`
--   `Longitude [degrees_east]`
--   `Latitude [degrees_north]`
+-   `Longitude`
+-   `Latitude`
 -   `yyyy-mm-ddThh:mm:ss.sss`
 -   `Type`
 
@@ -355,8 +359,12 @@ Common ODIS2ODV properties are:
     `TimeSeries`, `Trajectories`
 -   `primaryVariableTargetColumn`
 -   `columnSeparator`
+-   `columnNameRow`
+-   `dataStartRow`
 -   `fillValue`
--   `timeZone` (optional, for timestamp assembly)
+-   `timeZone` (optional IANA time-zone identifier)
+
+The converter reads source column names from `columnNameRow` and starts importing observations at `dataStartRow`. Rows between these positions are skipped. Unit rows are not parsed because unit information is provided by `unitText`, `unit`, and `unitID`.
 
 ### 3. Add mappings for measured variables
 
@@ -369,13 +377,23 @@ Example:
   "@type": "PropertyValue",
   "name": "Temperature",
   "description": "Sea water temperature",
-  "unitText": "Original provider unit information: degree Celsius.",
+  "unitText": "degrees Celsius",
   "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/TEMPPR01/",
   "additionalProperty": [
     {
       "@type": "PropertyValue",
       "name": "targetColumn",
-      "value": "Temperature [degC]"
+      "value": "Temperature"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "unit",
+      "value": "degC"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "unitID",
+      "value": "https://vocab.nerc.ac.uk/collection/P06/current/UPAA/"
     },
     {
       "@type": "PropertyValue",
@@ -389,11 +407,13 @@ Example:
 Rules:
 
 -   `name` is always the exact source column name
--   `targetColumn` defines the ODV output column including the ODV unit
-    label (for example `Temperature [degC]`)
+-   `targetColumn` defines the ODV output variable name without a unit suffix
+    (for example `Temperature`)
+-   `unit` defines the normalized ODV unit label (for example `degC`)
+-   `unitID` SHOULD provide a persistent machine-readable unit identifier
+    (for example a NERC P06 URI)
 -   `description` contains human-readable explanations
--   `unitText` is optional and may contain additional source/provider
-    unit information. It is not used for ODV column generation.
+-   `unitText` is optional and contains the human-readable unit name (for example `degrees Celsius` or `Number per millilitre`). It is not used for ODV column generation.
 -   `propertyID` SHOULD contain persistent semantic identifiers (for
     example NERC vocabulary URIs)
 
@@ -589,13 +609,18 @@ Example:
 ``` json
 {
   "name": "targetColumn",
-  "value": "Temperature [degC]"
+  "value": "Temperature"
 }
 ```
 
-The schema.org property `unitText` is optional. It can be used to
-preserve additional source/provider unit information, but it is not
-required for conversion and is not used to construct ODV column names.
+ODIS2ODV distinguishes three unit-related fields:
+
+- `unit` is the normalized unit label used for ODV output, for example `degC`.
+- `unitID` is a persistent machine-readable identifier for that unit, preferably
+  a resolvable vocabulary URI such as a NERC P06 URI.
+- schema.org `unitText` is the optional human-readable unit name.
+
+`unitText` provides the human-readable unit name, `unit` provides the compact ODV unit label, and `unitID` provides the persistent machine-readable identifier. `targetColumn` defines the ODV variable name.
 
 
 ## ODIS2ODV Converter

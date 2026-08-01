@@ -26,8 +26,24 @@ It uses:
   `PropertyValue.name`, for example `targetColumn`, `role`,
   `qualityFlagScheme`, and `relatedColumn`
 
-The profile targets data providers publishing CSV/TSV style tabular datasets
-and services that generate ODV-compatible outputs programmatically.
+The profile targets data providers publishing CSV/TSV style tabular datasets and services that
+generate ODV-compatible outputs programmatically.
+
+---
+
+## Design Goals
+
+The profile is designed to be:
+
+- deterministic
+- FAIR
+- machine-readable
+- AI-ready
+- schema.org-native
+- minimal
+
+Every semantic concept is represented exactly once. The profile intentionally avoids duplicate
+metadata, custom vocabularies, and inferred mappings wherever possible.
 
 ---
 
@@ -48,6 +64,28 @@ and services that generate ODV-compatible outputs programmatically.
 - Defining new quality flag semantics
 - ODV binary collections
 - NetCDF generation
+
+---
+
+## ODIS2ODV Dataset
+
+An ODIS2ODV document is represented as a schema.org `Dataset`. The dataset contains the general dataset metadata together with the information required to map the source data to an ODV Generic Spreadsheet.
+
+### schemaVersion
+
+**Required**
+
+The `schemaVersion` property MUST be present and identifies the version of the ODIS2ODV profile used to create the JSON-LD document. It allows software, including the ODIS2ODV converter, to determine which version of the profile the document conforms to.
+
+The value SHOULD follow semantic versioning (e.g. `1.0.0`).
+
+A simple version string is sufficient. A resolvable URL identifying the profile version MAY be used in future profile releases.
+
+**Example**
+
+```json
+"schemaVersion": "1.0.0"
+```
 
 ---
 
@@ -79,6 +117,8 @@ native schema.org vocabulary terms.
 Examples:
 
 - `targetColumn`
+- `unit`
+- `unitID`
 - `role`
 - `qualityFlagScheme`
 - `relatedColumn`
@@ -86,6 +126,10 @@ Examples:
 - `dataType`
 - `primaryVariableTargetColumn`
 - `columnSeparator`
+- `columnNameRow`
+- `dataStartRow`
+- `columnNameRow`
+- `dataStartRow`
 - `fillValue`
 
 This means ODIS2ODV is best described as **schema.org-based** and
@@ -126,8 +170,8 @@ A dataset-level `description` is strongly recommended for ODIS discovery.
 
 The following ODV core target-column mappings are mandatory for successful ODV conversion:
 
-- `Longitude [degrees_east]`
-- `Latitude [degrees_north]`
+- `Longitude`
+- `Latitude`
 
 The following ODV metadata columns are strongly recommended but not mandatory:
 
@@ -223,7 +267,7 @@ Example:
 {
   "@type": "PropertyValue",
   "name": "primaryVariableTargetColumn",
-  "value": "Pressure [dbar]"
+  "value": "Pressure"
 }
 ```
 
@@ -236,6 +280,51 @@ Examples:
 - tab (`\t`)
 - comma
 - semicolon
+
+### columnNameRow
+
+**Required**
+
+Defines the 1-based row number containing the source column names.
+
+The converter reads this row using `columnSeparator` and matches its values
+against `PropertyValue.name` in `Dataset.variableMeasured`.
+
+Example:
+
+```json
+{
+  "@type": "PropertyValue",
+  "name": "columnNameRow",
+  "value": 5
+}
+```
+
+### dataStartRow
+
+**Required**
+
+Defines the 1-based row number of the first source-data record.
+
+Rows between `columnNameRow` and `dataStartRow` are skipped. Unit rows or other
+provider-specific header rows are not parsed by the converter because unit
+information is encoded in `unitText`, `unit`, and `unitID`.
+
+`dataStartRow` MUST be greater than `columnNameRow`.
+
+The JSON Schema validates that both row properties are positive integers. The
+relationship `dataStartRow > columnNameRow` MUST additionally be checked by the
+converter because the values occur in separate `PropertyValue` array entries.
+
+Example:
+
+```json
+{
+  "@type": "PropertyValue",
+  "name": "dataStartRow",
+  "value": 7
+}
+```
 
 ### fillValue
 
@@ -255,8 +344,15 @@ The following dataset-level entries are optional:
 - `fillValue`
 - `timeZone`
 
-`timeZone` may be used when the ODV timestamp is assembled from separate
-source columns. Prefer `UTC` or an IANA time zone name.
+`timeZone` specifies the time zone of source timestamps when the source data does not already
+contain an explicit UTC offset. The value **SHALL** be a standard **IANA time-zone identifier**, for
+example `UTC`, `Pacific/Honolulu`, or `Europe/Berlin`.
+
+When `timeZone` is present, the converter **SHALL** interpret all source timestamps in the specified time
+zone and convert them to UTC before generating the ODV timestamp column (`yyyy-mm-ddThh:mm:ss.sss`).
+
+If `timeZone` is omitted, the converter **SHALL** preserve the source timestamps without timezone
+conversion. In this case, the timezone of the timestamps is considered unknown.
 
 ---
 
@@ -272,9 +368,15 @@ Required:
 
 - `PropertyValue.name`
 
-The value MUST match the exact source column header.
+`PropertyValue.name` MUST contain the exact column header as it appears in the source data table. In
+this profile, `name` therefore serves as the explicit source-column identifier. A separate
+`sourceColumn` property is not required.
 
-For regular data and metadata columns, the ODV output column is defined by:
+The source-column name is intentionally kept in the native schema.org `name` property to avoid
+duplicating the same information in an additional profile-specific `PropertyValue`.
+
+
+For regular data and metadata columns, the ODV output variable is defined by:
 
 `additionalProperty(name="targetColumn")`
 
@@ -285,13 +387,13 @@ Example:
   "@type": "PropertyValue",
   "name": "Lon",
   "description": "Longitude of the sampling location.",
-  "unitText": "degrees_east",
+  "unitText": "degrees east",
   "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/ALONZZ01/",
   "additionalProperty": [
     {
       "@type": "PropertyValue",
       "name": "targetColumn",
-      "value": "Longitude [degrees_east]"
+      "value": "Longitude"
     }
   ]
 }
@@ -303,6 +405,12 @@ Example:
 
 Columns SHOULD use native schema.org properties where available.
 
+### name
+
+Use `PropertyValue.name` for the exact source-column header.
+
+Within `Dataset.variableMeasured`, `name` is not merely a descriptive variable label. It is the machine-actionable identifier used to locate the corresponding column in the source table. Human-readable scientific meaning SHOULD be provided through `description`, while persistent semantic meaning SHOULD be provided through `propertyID`.
+
 ### description
 
 Use `PropertyValue.description` for human-readable variable definitions,
@@ -310,19 +418,40 @@ comments, explanations, or method notes.
 
 ### unitText
 
-Use `PropertyValue.unitText` for optional unit information from the
-source dataset/provider.
+Use `PropertyValue.unitText` for the concise, human-readable name of the
+physical unit, for example `degrees Celsius`, `decibar`, or
+`Number per millilitre`.
 
-`unitText` is informational metadata. The ODV converter MUST NOT derive
-ODV output column names from `unitText`.
+`unitText` is optional. If the source column has no physical unit, `unitText`
+SHOULD be omitted rather than set to an empty string. If present, `unitText`
+SHALL contain the unit name itself, not a sentence describing unit provenance,
+conversion, or display conventions. Such explanatory information belongs in
+`description`.
 
-The authoritative ODV variable name and unit label are defined by
-`targetColumn`.
+`unitText` is informational schema.org metadata. The ODV converter MUST NOT
+derive ODV output column names or ODV unit labels from `unitText`.
+
+The three unit-related fields have distinct purposes:
+
+- `unitText`: human-readable unit name
+- `unit`: compact unit label used in the generated ODV Generic Spreadsheet
+- `unitID`: persistent machine-readable unit identifier, preferably a NERC P06 URI
+
+For columns without a physical unit, all three fields SHOULD be omitted. For
+quantitative columns with a physical unit, all three SHOULD normally be
+provided when the information is available. Legacy or incomplete source
+metadata may provide only a subset.
 
 Example:
 
-- `targetColumn`: `Temperature [degC]`
-- `unitText`: `Original source unit is degrees Celsius.`
+- `targetColumn`: `Temperature`
+- `unitText`: `degrees Celsius`
+- `unit`: `degC`
+- `unitID`: `https://vocab.nerc.ac.uk/collection/P06/current/UPAA/`
+
+If the source notation differs from the normalized ODV label, the distinction
+SHOULD be explained in `description`, for example: `The original source unit is
+degrees Celsius; the ODV target uses the compact unit label degC.`
 
 ### propertyID
 
@@ -376,12 +505,68 @@ Auxiliary columns use:
 
 Required for regular ODV data and metadata columns.
 
-It defines the ODV output column name.
+It defines the ODV output variable name without a unit suffix. Units are described
+separately with `unit` and `unitID`.
+
+### unit
+
+Defines the compact unit label used in the generated ODV Generic Spreadsheet,
+for example `degC`, `dbar`, `degrees_east`, or `1/ml`.
+
+The value may differ from the human-readable `unitText` label. For example,
+`unitText = Number per millilitre` may be paired with `unit = 1/ml`.
+
+`unit` SHOULD normally be provided for quantitative variables with a physical
+unit. If no physical unit applies, `unit` SHOULD be omitted rather than set to
+an empty string. For genuinely dimensionless quantitative variables, a suitable
+label such as `1` MAY be used. It is normally omitted for textual metadata,
+timestamps, and quality flags.
+
+### unitID
+
+Provides a persistent machine-readable identifier for the unit. A resolvable
+vocabulary URI SHOULD be used, preferably a NERC P06 URI where available.
+
+`unitID` SHOULD normally accompany `unit` for quantitative variables when a
+suitable persistent identifier is available. It improves semantic
+interoperability and AI-readiness, but it does not replace either the
+human-readable `unitText` value or the compact ODV `unit` value. If no physical
+unit applies, `unitID` SHOULD be omitted.
+
+
+Example for abundance data:
+
+```json
+{
+  "@type": "PropertyValue",
+  "name": "ProchlBact",
+  "description": "Prochlorococcus abundance. The original source notation is #/ml; the ODV target uses the compact unit label 1/ml.",
+  "unitText": "Number per millilitre",
+  "propertyID": "https://vocab.nerc.ac.uk/collection/P01/current/...",
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "targetColumn",
+      "value": "ProchlBact"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "unit",
+      "value": "1/ml"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "unitID",
+      "value": "https://vocab.nerc.ac.uk/collection/P06/current/UCML/"
+    }
+  ]
+}
+```
 
 The following target columns are mandatory:
 
-- `Longitude [degrees_east]`
-- `Latitude [degrees_north]`
+- `Longitude`
+- `Latitude`
 
 The following target columns are strongly recommended but optional:
 
@@ -401,7 +586,7 @@ For `targetColumn = Type`, allowed source data values are:
 The converter SHOULD validate these values during data conversion.
 
 For known ODV metadata target columns such as `Cruise`, `Station`,
-`Longitude [degrees_east]`, `Latitude [degrees_north]`,
+`Longitude`, `Latitude`,
 `yyyy-mm-ddThh:mm:ss.sss`, and `Type`, converters may infer `role = meta`
 and the appropriate datatype. Therefore `role` and `dataType` do not need to
 be repeated for these known ODV columns.
@@ -410,11 +595,10 @@ be repeated for these known ODV columns.
 
 Required for auxiliary columns with `role = quality` or `role = standardDeviation`.
 
-`relatedColumn` contains the final ODV target column name of the measured
+`relatedColumn` contains the final ODV target variable name of the measured
 variable to which the auxiliary column belongs.
 
-It MUST refer to the `targetColumn` value, not to the original source column
-name.
+It MUST refer to the `targetColumn` value, not to the original source column name or to a unit-qualified label.
 
 Example:
 
@@ -431,7 +615,7 @@ Example:
     {
       "@type": "PropertyValue",
       "name": "relatedColumn",
-      "value": "Temperature [degC]"
+      "value": "Temperature"
     }
   ]
 }
@@ -457,8 +641,8 @@ For known ODV core metadata columns:
 
 - `Cruise`
 - `Station`
-- `Longitude [degrees_east]`
-- `Latitude [degrees_north]`
+- `Longitude`
+- `Latitude`
 - `yyyy-mm-ddThh:mm:ss.sss`
 - `Type`
 
@@ -551,7 +735,6 @@ SHOULD use the direct mapping and do not need time-component assembly.
   "@type": "PropertyValue",
   "name": "Temperature Flag",
   "description": "Quality flag for the temperature observation.",
-  "unitText": "unitless",
   "additionalProperty": [
     {
       "@type": "PropertyValue",
@@ -579,8 +762,18 @@ SHOULD use the direct mapping and do not need time-component assembly.
   "@type": "PropertyValue",
   "name": "Temperature std",
   "description": "Standard deviation of the temperature observation.",
-  "unitText": "degrees_Celsius",
+  "unitText": "degrees Celsius",
   "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "unit",
+      "value": "degC"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "unitID",
+      "value": "https://vocab.nerc.ac.uk/collection/P06/current/UPAA/"
+    },
     {
       "@type": "PropertyValue",
       "name": "role",
@@ -649,9 +842,12 @@ A converter SHOULD:
 
 1. Validate JSON-LD against the ODIS2ODV JSON Schema
 2. Read the source file from `distribution.contentUrl`
-3. Apply dataset parsing hints:
-   - `columnSeparator`
-   - `fillValue`
+3. Apply dataset parsing metadata:
+   - read column names from the 1-based `columnNameRow`
+   - begin reading observations at the 1-based `dataStartRow`
+   - use `columnSeparator`
+   - apply `fillValue` if present
+   - skip rows between `columnNameRow` and `dataStartRow`
 4. Extract source-to-target mappings from `variableMeasured`
 5. Map `role = meta` and `role = data` columns to ODV output columns using
    `targetColumn`
