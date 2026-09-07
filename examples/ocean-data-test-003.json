@@ -56,12 +56,12 @@
     {
       "@type": "PropertyValue",
       "name": "columnNameRow",
-      "value": 1
+      "value": "1"
     },
     {
       "@type": "PropertyValue",
       "name": "dataStartRow",
-      "value": 2
+      "value": "2"
     }
   ],
   "variableMeasured": [

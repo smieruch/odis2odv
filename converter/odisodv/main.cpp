@@ -196,6 +196,7 @@ int main(int argc, char *argv[])
       out << "Content Url: " << contentUrl << "\n";
       
       //get additionalProperty that contain the DatasetProperties
+      //Q: what if a json contains another additionalProperty? Or must that be unique?
       const QJsonArray additionalProperty = getRequiredArray(root, "additionalProperty", out);
 
       if (additionalProperty.isEmpty()) {
@@ -207,7 +208,7 @@ int main(int argc, char *argv[])
       QMap<QString, QString> datasetProperties;
 
       if (!parseDatasetProperties(additionalProperty, datasetProperties,
-                                    out)) {
+				  out)) {
         return 1;
       }
 
