@@ -512,3 +512,37 @@ bool parseDatasetProperties(const QJsonArray& properties,
   
   return true;
 }
+
+//---------------------------------------------------------------------
+// parseVariables()
+//
+// Inspects the variableMeasured array.
+//
+// Responsibility:
+//     variableMeasured array -> validated VariableDefinition
+//---------------------------------------------------------------------
+bool parseVariables(const QJsonArray& variables,
+                    QList<VariableDefinition>& result,
+                    QTextStream& errorOutput)
+{
+    for (const QJsonValue& value : variables) {
+        if (!value.isObject()) {
+            errorOutput << "Variable entry is not a JSON object\n";
+            return false;
+        }
+
+        const QJsonObject variableObject = value.toObject();
+
+        VariableDefinition variable;
+
+        variable.sourceColumn = getString(variableObject, "name", errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow);
+
+        if (variable.sourceColumn.isEmpty()) {
+            return false;
+        }
+
+        result.append(variable);
+    }
+
+    return true;
+}
