@@ -700,6 +700,34 @@ For example, the included JSON-LD test dataset can be inspected with:
 ./build/odisodv inspect examples/ocean-data-test-003.json
 ```
 
+### Editor integration with `clangd` (`compile_commands.json`)
+
+For a better C++ development experience with language servers such as
+`clangd` (for example with Emacs/Eglot), it is recommended to generate a
+`compile_commands.json` file during the CMake configuration.
+
+Create the build directory with:
+
+```bash
+cmake -S converter/odisodv -B build \
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+``
+
+The generated file contains the exact compiler commands used for every
+source file, including C++ standard settings, include paths, and compiler
+definitions. This allows clangd to correctly understand the project,
+including Qt headers.
+
+For convenience, create a symbolic link in the repository root:
+
+```bash
+ln -s build/compile_commands.json compile_commands.json
+```
+
+The symbolic link allows editors and development tools to automatically
+discover the compilation database.
+
+
 The build directory contains generated files and should not be committed
 to the repository.
 
