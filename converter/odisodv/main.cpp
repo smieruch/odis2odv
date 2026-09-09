@@ -212,10 +212,33 @@ int main(int argc, char *argv[])
         return 1;
       }
 
-      
+      //get variableMeasured array
+      const QJsonArray variableMeasured = getRequiredArray(root, "variableMeasured", out);
 
+      if (variableMeasured.isEmpty()) {
+	out << "Property is an empty array: variableMeasured\n";
+	return 1;
+      }
 
-      
+      QList<VariableDefinition> variables;
+
+      if (!parseVariables(variableMeasured, variables, out)) {
+        return 1;
+      }
+
+      // Output the parsed variables
+      for (const auto& variable : variables) {
+        out << "Variable: " << variable.name << "\n";
+        out << "  Description: " << variable.description << "\n";
+        out << "  Unit Text: " << variable.unitText << "\n";
+        out << "  Property ID: " << variable.propertyID << "\n";
+        out << "  Target Column: " << variable.targetColumn << "\n";
+        out << "  Data Type: " << variable.dataType << "\n";
+        out << "  Role: " << variable.role << "\n";
+        out << "  Related Column: " << variable.relatedColumn << "\n";
+        out << "  Quality Flag Scheme: " << variable.qualityFlagScheme << "\n";
+      }
+
       return 0;
     }
     else if (command == "convert") {
@@ -480,5 +503,3 @@ bool parseDatasetProperties(const QJsonArray& properties,
   
   return true;
 }
-
-
