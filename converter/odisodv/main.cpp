@@ -230,20 +230,20 @@ int main(int argc, char *argv[])
          return 1;
       }
 
-      // // Output the parsed variables
-      // for (const auto& variable : variables) {
-      //   out << "Variable: " << variable.sourceColumn << "\n"; //name in json
-      //   out << "  Description: " << variable.description << "\n";
-      //   out << "  Unit Text: " << variable.unitText << "\n";
-      //   out << "  Property ID: " << variable.propertyID << "\n";
-      //   out << "  Target Column: " << variable.targetColumn << "\n";
-      //   out << "  Unit: " << variable.unit << "\n";
-      // 	out << "  Unit ID: " << variable.unitID << "\n";
-      //   out << "  Data Type: " << variable.dataType << "\n";
-      //   out << "  Role: " << variable.role << "\n";
-      //   out << "  Related Column: " << variable.relatedColumn << "\n";
-      //   out << "  Quality Flag Scheme: " << variable.qualityFlagScheme << "\n";
-      // }
+      // Output the parsed variables
+      for (const auto& variable : variables) {
+        out << "Variable: " << variable.sourceColumn << "\n"; //name in json
+        // out << "  Description: " << variable.description << "\n";
+        // out << "  Unit Text: " << variable.unitText << "\n";
+        // out << "  Property ID: " << variable.propertyID << "\n";
+        // out << "  Target Column: " << variable.targetColumn << "\n";
+        // out << "  Unit: " << variable.unit << "\n";
+	// out << "  Unit ID: " << variable.unitID << "\n";
+        // out << "  Data Type: " << variable.dataType << "\n";
+        // out << "  Role: " << variable.role << "\n";
+        // out << "  Related Column: " << variable.relatedColumn << "\n";
+        // out << "  Quality Flag Scheme: " << variable.qualityFlagScheme << "\n";
+      }
 
       return 0;
     }
@@ -535,7 +535,8 @@ bool parseVariables(const QJsonArray& variables,
 
         VariableDefinition variable;
 
-        variable.sourceColumn = getString(variableObject, "name", errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow);
+        variable.sourceColumn = getString(variableObject, "name", errorOutput,
+                                          EmptyPolicy::NotAllow, MissingPolicy::NotAllow);
 
         if (variable.sourceColumn.isEmpty()) {
             return false;
