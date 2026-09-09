@@ -7,29 +7,36 @@
 #include <QJsonParseError>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <QMap>
+
 
 //======================================================================
 // Helper Types
 //======================================================================
 
 enum class EmptyPolicy { NotAllow, Allow };
+enum class MissingPolicy { NotAllow, Allow };
 
 //======================================================================
 // Structs
 //======================================================================
 
 struct VariableDefinition {
-    QString sourceColumn;
-    QString description;
-    QString unitText;
-    QString propertyID;
-
-    QString targetColumn;
-    QString dataType;
-    QString role;
-    QString relatedColumn;
-    QString qualityFlagScheme;
+  QString sourceColumn;
+  QString description;
+  QString unitText;
+  QString propertyID;
+  
+  QString targetColumn;
+  QString unit;
+  QString unitID;
+  QString dataType;
+  QString role;
+  QString relatedColumn;
+  QString qualityFlagScheme;
 };
 
 //======================================================================
@@ -41,9 +48,10 @@ bool parseJsonDocument(const QByteArray &data, QJsonObject &root,
 QByteArray readLocalFile(const QString &source,
                          QTextStream& errorOutput);
 
-QString getRequiredString(const QJsonObject &object, const QString &key,
-                          QTextStream &errorOutput,
-                          EmptyPolicy emptyPolicy = EmptyPolicy::NotAllow);
+QString getString(const QJsonObject &object, const QString &key,
+                  QTextStream &errorOutput,
+                  EmptyPolicy emptyPolicy = EmptyPolicy::NotAllow,
+		  MissingPolicy missingPolicy = MissingPolicy::NotAllow);
 
 QJsonObject getRequiredObject(const QJsonObject& object,
                               const QString& key,
@@ -138,19 +146,19 @@ int main(int argc, char *argv[])
       
 
       //get type and name and schemaVersion
-      const QString type = getRequiredString(root, "@type", out, EmptyPolicy::NotAllow);
+      const QString type = getString(root, "@type", out, EmptyPolicy::NotAllow);
 
       if (type.isEmpty()) {
 	return 1;
       }
       
-      const QString name = getRequiredString(root, "name", out, EmptyPolicy::NotAllow);
+      const QString name = getString(root, "name", out, EmptyPolicy::NotAllow);
       
       if (name.isEmpty()) {
 	return 1;
       }
 
-      const QString schemaVersion = getRequiredString(root, "schemaVersion", out, EmptyPolicy::NotAllow);
+      const QString schemaVersion = getString(root, "schemaVersion", out, EmptyPolicy::NotAllow);
       
       if (schemaVersion.isEmpty()) {
 	return 1;
@@ -183,7 +191,7 @@ int main(int argc, char *argv[])
       out << "dataDownload:\n";
       // out << dataDownloadDocument.toJson(QJsonDocument::Indented) << "\n";
       
-      const QString contentUrl = getRequiredString(dataDownload, "contentUrl", out);
+      const QString contentUrl = getString(dataDownload, "contentUrl", out);
 
       if (contentUrl.isEmpty()) {
 	return 1;
@@ -219,21 +227,23 @@ int main(int argc, char *argv[])
       QList<VariableDefinition> variables;
 
       if (!parseVariables(variableMeasured, variables, out)) {
-        return 1;
+         return 1;
       }
 
-      // Output the parsed variables
-      for (const auto& variable : variables) {
-        out << "Variable: " << variable.name << "\n";
-        out << "  Description: " << variable.description << "\n";
-        out << "  Unit Text: " << variable.unitText << "\n";
-        out << "  Property ID: " << variable.propertyID << "\n";
-        out << "  Target Column: " << variable.targetColumn << "\n";
-        out << "  Data Type: " << variable.dataType << "\n";
-        out << "  Role: " << variable.role << "\n";
-        out << "  Related Column: " << variable.relatedColumn << "\n";
-        out << "  Quality Flag Scheme: " << variable.qualityFlagScheme << "\n";
-      }
+      // // Output the parsed variables
+      // for (const auto& variable : variables) {
+      //   out << "Variable: " << variable.sourceColumn << "\n"; //name in json
+      //   out << "  Description: " << variable.description << "\n";
+      //   out << "  Unit Text: " << variable.unitText << "\n";
+      //   out << "  Property ID: " << variable.propertyID << "\n";
+      //   out << "  Target Column: " << variable.targetColumn << "\n";
+      //   out << "  Unit: " << variable.unit << "\n";
+      // 	out << "  Unit ID: " << variable.unitID << "\n";
+      //   out << "  Data Type: " << variable.dataType << "\n";
+      //   out << "  Role: " << variable.role << "\n";
+      //   out << "  Related Column: " << variable.relatedColumn << "\n";
+      //   out << "  Quality Flag Scheme: " << variable.qualityFlagScheme << "\n";
+      // }
 
       return 0;
     }
@@ -331,27 +341,30 @@ QByteArray readLocalFile(const QString& source, QTextStream& errorOutput)
 
 
 //----------------------------------------------------------------------
-// getRequiredString()
+// getString()
 //
-// Reads a mandatory string property.
+// Reads a string property.
 //
 // The function verifies that the property
 //   - exists,
 //   - is a JSON string, and
 //   - is non-empty unless EmptyPolicy::Allow is specified.
+//   - is non-missing unless MissingPolicy::Allow is specified.
 //
 // Responsibility:
 //     JSON object -> validated QString
 //----------------------------------------------------------------------
-QString getRequiredString(const QJsonObject &object, const QString &key,
-                          QTextStream &errorOutput,
-                          EmptyPolicy emptyPolicy)
+QString getString(const QJsonObject &object, const QString &key,
+                  QTextStream &errorOutput, EmptyPolicy emptyPolicy,
+		  MissingPolicy missingPolicy)
 {
     const QJsonValue value = object.value(key);
 
     if (value.isUndefined()) {
+      if (missingPolicy == MissingPolicy::NotAllow){
         errorOutput << "Missing required property: " << key << "\n";
-        return QString();
+      }
+      return QString();
     }
 
     if (!value.isString()) {
@@ -476,14 +489,14 @@ bool parseDatasetProperties(const QJsonArray& properties,
     
     const QJsonObject propertyObject = value.toObject();
 
-    const QString propertyName = getRequiredString(propertyObject, "name", errorOutput);
+    const QString propertyName = getString(propertyObject, "name", errorOutput);
 
     if (propertyName.isNull()) {
       return false;
     }
 
 
-    const QString propertyValue = getRequiredString(propertyObject, "value", errorOutput, EmptyPolicy::Allow);
+    const QString propertyValue = getString(propertyObject, "value", errorOutput, EmptyPolicy::Allow);
 
     if (propertyValue.isNull()) {
       return false;
