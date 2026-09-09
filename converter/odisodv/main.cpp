@@ -6,12 +6,12 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
-#include <qjsonarray.h>
-#include <qjsonobject.h>
-#include <qjsonvalue.h>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonObject>
 #include <QJsonArray>
 #include <QMap>
-#include <qmap.h>
+
 
 //======================================================================
 // Helper Types
