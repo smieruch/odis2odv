@@ -7,11 +7,7 @@
 #include <QJsonParseError>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QJsonObject>
-#include <QJsonObject>
-#include <QJsonArray>
 #include <QMap>
-
 
 //======================================================================
 // Helper Types
@@ -24,18 +20,16 @@ enum class EmptyPolicy { NotAllow, Allow };
 //======================================================================
 
 struct VariableDefinition {
-  QString sourceColumn;
-  QString description;
-  QString unitText;
-  QString propertyID;
-  
-  QString targetColumn;
-  QString unit;
-  QString unitID;
-  QString dataType;
-  QString role;
-  QString relatedColumn;
-  QString qualityFlagScheme;
+    QString sourceColumn;
+    QString description;
+    QString unitText;
+    QString propertyID;
+
+    QString targetColumn;
+    QString dataType;
+    QString role;
+    QString relatedColumn;
+    QString qualityFlagScheme;
 };
 
 //======================================================================
@@ -230,13 +224,11 @@ int main(int argc, char *argv[])
 
       // Output the parsed variables
       for (const auto& variable : variables) {
-        out << "Variable: " << variable.sourceColumn << "\n";
+        out << "Variable: " << variable.name << "\n";
         out << "  Description: " << variable.description << "\n";
         out << "  Unit Text: " << variable.unitText << "\n";
         out << "  Property ID: " << variable.propertyID << "\n";
         out << "  Target Column: " << variable.targetColumn << "\n";
-        out << "  Unit: " << variable.unit << "\n";
-	out << "  Unit ID: " << variable.unitID << "\n";
         out << "  Data Type: " << variable.dataType << "\n";
         out << "  Role: " << variable.role << "\n";
         out << "  Related Column: " << variable.relatedColumn << "\n";
