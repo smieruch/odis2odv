@@ -25,7 +25,7 @@ enum class MissingPolicy { NotAllow, Allow };
 //======================================================================
 
 struct VariableDefinition {
-  QString sourceColumn;
+  QString name;
   QString description;
   QString unitText;
   QString propertyID;
@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
 
       // Output the parsed variables
       for (const auto& variable : variables) {
-        out << "Variable: " << variable.sourceColumn << "\n"; //name in json
+        out << "Variable name: " << variable.name << "\n"; //name in json
         // out << "  Description: " << variable.description << "\n";
         // out << "  Unit Text: " << variable.unitText << "\n";
         // out << "  Property ID: " << variable.propertyID << "\n";
@@ -492,17 +492,13 @@ bool parseDatasetProperties(const QJsonArray& properties,
     const QJsonObject propertyObject = value.toObject();
 
     QString propertyName;
-    getString(propertyObject, "name", propertyName, errorOutput);
-    
-    if (propertyName.isNull()) {
+    if (!getString(propertyObject, "name", propertyName, errorOutput)){
       return false;
     }
 
 
     QString propertyValue;
-    getString(propertyObject, "value", propertyValue, errorOutput, EmptyPolicy::Allow);
-
-    if (propertyValue.isNull()) {
+    if (!getString(propertyObject, "value", propertyValue, errorOutput, EmptyPolicy::Allow)){
       return false;
     }
     
@@ -539,7 +535,7 @@ bool parseVariables(const QJsonArray& variables,
 
         VariableDefinition variable;
 
-        if (!getString(variableObject, "name", variable.sourceColumn,
+        if (!getString(variableObject, "name", variable.name,
                       errorOutput, EmptyPolicy::NotAllow,
                       MissingPolicy::NotAllow)) {
 	  return false;
