@@ -167,6 +167,7 @@ int main(int argc, char *argv[])
       out << "schemaVersion: " << schemaVersion << "\n";
       //----------------------------------------------------------------------
 
+
       
       //get distribution array, it has the data download link
       const QJsonArray distribution = getRequiredArray(root, "distribution", out);
