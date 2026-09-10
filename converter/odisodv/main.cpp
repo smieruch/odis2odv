@@ -48,7 +48,7 @@ bool parseJsonDocument(const QByteArray &data, QJsonObject &root,
 QByteArray readLocalFile(const QString &source,
                          QTextStream& errorOutput);
 
-QString getString(const QJsonObject &object, const QString &key,
+bool getString(const QJsonObject &object, const QString &key, QString& result,
                   QTextStream &errorOutput,
                   EmptyPolicy emptyPolicy = EmptyPolicy::NotAllow,
 		  MissingPolicy missingPolicy = MissingPolicy::NotAllow);
@@ -146,21 +146,19 @@ int main(int argc, char *argv[])
       
 
       //get type and name and schemaVersion
-      const QString type = getString(root, "@type", out, EmptyPolicy::NotAllow);
-
-      if (type.isEmpty()) {
-	return 1;
-      }
-      
-      const QString name = getString(root, "name", out, EmptyPolicy::NotAllow);
-      
-      if (name.isEmpty()) {
+      QString type;
+      if (!getString(root, "@type", type, out, EmptyPolicy::NotAllow)) {
 	return 1;
       }
 
-      const QString schemaVersion = getString(root, "schemaVersion", out, EmptyPolicy::NotAllow);
-      
-      if (schemaVersion.isEmpty()) {
+
+      QString name;
+      if (!getString(root, "name", name, out, EmptyPolicy::NotAllow)){
+	return 1;
+      }
+
+      QString schemaVersion;
+      if (!getString(root, "schemaVersion", schemaVersion, out, EmptyPolicy::NotAllow)){
 	return 1;
       }
       
@@ -190,10 +188,9 @@ int main(int argc, char *argv[])
       QJsonDocument dataDownloadDocument(dataDownload);
       out << "dataDownload:\n";
       // out << dataDownloadDocument.toJson(QJsonDocument::Indented) << "\n";
-      
-      const QString contentUrl = getString(dataDownload, "contentUrl", out);
 
-      if (contentUrl.isEmpty()) {
+      QString contentUrl;
+      if (!getString(dataDownload, "contentUrl", contentUrl, out)){
 	return 1;
       }
 
@@ -227,6 +224,7 @@ int main(int argc, char *argv[])
       QList<VariableDefinition> variables;
 
       if (!parseVariables(variableMeasured, variables, out)) {
+	out << "Error in parseVariables\n";
          return 1;
       }
 
@@ -354,7 +352,7 @@ QByteArray readLocalFile(const QString& source, QTextStream& errorOutput)
 // Responsibility:
 //     JSON object -> validated QString
 //----------------------------------------------------------------------
-QString getString(const QJsonObject &object, const QString &key,
+bool getString(const QJsonObject &object, const QString &key, QString& result,
                   QTextStream &errorOutput, EmptyPolicy emptyPolicy,
 		  MissingPolicy missingPolicy)
 {
@@ -363,23 +361,26 @@ QString getString(const QJsonObject &object, const QString &key,
     if (value.isUndefined()) {
       if (missingPolicy == MissingPolicy::NotAllow){
         errorOutput << "Missing required property: " << key << "\n";
+	return false;
       }
-      return QString();
+      result.clear();
+      return true;
     }
 
     if (!value.isString()) {
         errorOutput << "Property is not a string: " << key << "\n";
-	return QString();
+	return false;
     }
 
     const QString text = value.toString();
 
     if (emptyPolicy == EmptyPolicy::NotAllow && text.isEmpty()) {
         errorOutput << "Property is an empty string: " << key << "\n";
-	return QString();
+	return false;
     }
 
-    return text;
+    result = text;
+    return true;
 }
 
 
@@ -489,14 +490,16 @@ bool parseDatasetProperties(const QJsonArray& properties,
     
     const QJsonObject propertyObject = value.toObject();
 
-    const QString propertyName = getString(propertyObject, "name", errorOutput);
-
+    QString propertyName;
+    getString(propertyObject, "name", propertyName, errorOutput);
+    
     if (propertyName.isNull()) {
       return false;
     }
 
 
-    const QString propertyValue = getString(propertyObject, "value", errorOutput, EmptyPolicy::Allow);
+    QString propertyValue;
+    getString(propertyObject, "value", propertyValue, errorOutput, EmptyPolicy::Allow);
 
     if (propertyValue.isNull()) {
       return false;
@@ -535,13 +538,13 @@ bool parseVariables(const QJsonArray& variables,
 
         VariableDefinition variable;
 
-        variable.sourceColumn = getString(variableObject, "name", errorOutput,
-                                          EmptyPolicy::NotAllow, MissingPolicy::NotAllow);
-
-        if (variable.sourceColumn.isEmpty()) {
-            return false;
+        if (getString(variableObject, "name", variable.sourceColumn,
+                      errorOutput, EmptyPolicy::NotAllow,
+                      MissingPolicy::NotAllow)) {
+	  return false;
         }
 
+	
         result.append(variable);
     }
 
