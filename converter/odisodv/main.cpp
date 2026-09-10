@@ -538,7 +538,7 @@ bool parseVariables(const QJsonArray& variables,
 
         VariableDefinition variable;
 
-        if (getString(variableObject, "name", variable.sourceColumn,
+        if (!getString(variableObject, "name", variable.sourceColumn,
                       errorOutput, EmptyPolicy::NotAllow,
                       MissingPolicy::NotAllow)) {
 	  return false;
