@@ -25,8 +25,10 @@ enum class MissingPolicy { NotAllow, Allow };
 // Structs
 //======================================================================
 
+// any change in this struct requires changes in parseVariables
+// and parseVariableAdditionalProperties
 struct VariableDefinition {
-  QString sourceColumn;
+  QString name;
   QString description;
   QString unitText;
   QString propertyID;
@@ -70,6 +72,9 @@ bool parseVariables(const QJsonArray& variables,
                     QList<VariableDefinition>& result,
                     QTextStream& errorOutput);
 
+bool parseVariableAdditionalProperties(const QJsonArray& properties,
+				       VariableDefinition& variable,
+				       QTextStream& errorOutput);
 //======================================================================
 // main
 //======================================================================
@@ -231,18 +236,18 @@ int main(int argc, char *argv[])
       }
 
       // Output the parsed variables
-      for (const auto& variable : variables) {
-        out << "Variable: " << variable.sourceColumn << "\n"; //name in json
-        // out << "  Description: " << variable.description << "\n";
-        // out << "  Unit Text: " << variable.unitText << "\n";
-        // out << "  Property ID: " << variable.propertyID << "\n";
-        // out << "  Target Column: " << variable.targetColumn << "\n";
-        // out << "  Unit: " << variable.unit << "\n";
-	// out << "  Unit ID: " << variable.unitID << "\n";
-        // out << "  Data Type: " << variable.dataType << "\n";
-        // out << "  Role: " << variable.role << "\n";
-        // out << "  Related Column: " << variable.relatedColumn << "\n";
-        // out << "  Quality Flag Scheme: " << variable.qualityFlagScheme << "\n";
+      for (const auto &variable : variables) {
+        out << "Variable: " << variable.name << "\n"; 
+        out << "  Description: " << variable.description << "\n";
+        out << "  Unit Text: " << variable.unitText << "\n";
+        out << "  Property ID: " << variable.propertyID << "\n";
+        out << "  Target Column: " << variable.targetColumn << "\n";
+        out << "  Unit: " << variable.unit << "\n";
+	out << "  Unit ID: " << variable.unitID << "\n";
+        out << "  Data Type: " << variable.dataType << "\n";
+        out << "  Role: " << variable.role << "\n";
+        out << "  Related Column: " << variable.relatedColumn << "\n";
+        out << "  Quality Flag Scheme: " << variable.qualityFlagScheme << "\n";
       }
 
       return 0;
@@ -356,8 +361,8 @@ QByteArray readLocalFile(const QString& source, QTextStream& errorOutput)
 //----------------------------------------------------------------------
 bool getString(const QJsonObject &object, const QString &key, QString& result,
                   QTextStream &errorOutput,
-                  EmptyPolicy emptyPolicy = EmptyPolicy::NotAllow,
-		  MissingPolicy missingPolicy = MissingPolicy::NotAllow)
+	       EmptyPolicy emptyPolicy, 
+	       MissingPolicy missingPolicy)
 {
     const QJsonValue value = object.value(key);
 
@@ -536,44 +541,85 @@ bool parseVariables(const QJsonArray& variables,
             return false;
         }
 
-        if (!getString(variableObject, "unitText", variable.unitText, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+        if (!getString(variableObject, "unitText", variable.unitText, errorOutput, EmptyPolicy::Allow, MissingPolicy::Allow)) {
             return false;
         }
 
-        if (!getString(variableObject, "propertyID", variable.propertyID, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+        if (!getString(variableObject, "propertyID", variable.propertyID, errorOutput, EmptyPolicy::Allow, MissingPolicy::Allow)) {
             return false;
         }
 
-        if (!getString(variableObject, "targetColumn", variable.targetColumn, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
-            return false;
+        // now for every variable go through the addtionalProperties
+	const QJsonArray additionalProperties =
+	  getRequiredArray(variableObject, "additionalProperty", errorOutput);
+	
+        if (!parseVariableAdditionalProperties(additionalProperties,
+                                               variable,
+                                               errorOutput)) {
+	  errorOutput << "Error in parseVariableAdditionalProperties\n";
+          return false;
         }
 
-        if (!getString(variableObject, "unit", variable.unit, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
-            return false;
-        }
-
-        if (!getString(variableObject, "unitID", variable.unitID, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
-            return false;
-        }
-
-        if (!getString(variableObject, "dataType", variable.dataType, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
-            return false;
-        }
-
-        if (!getString(variableObject, "role", variable.role, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
-            return false;
-        }
-
-        if (!getString(variableObject, "relatedColumn", variable.relatedColumn, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
-            return false;
-        }
-
-        if (!getString(variableObject, "qualityFlagScheme", variable.qualityFlagScheme, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
-            return false;
-        }
-
+        // variable is changed in parseVariableAdditionalProperties
+        // and initiated new in every iteration, thus append to result
         result.append(variable);
+        
     }
 
     return true;
+}
+
+
+bool parseVariableAdditionalProperties(const QJsonArray& properties,
+				       VariableDefinition& variable,
+				       QTextStream& errorOutput)
+{
+
+  for (const QJsonValue& propertyValue : properties) {
+    if (!propertyValue.isObject()) {
+      errorOutput << "Variable additionalProperty entry is not a JSON object\n";
+      return false;
+    }
+
+    const QJsonObject propertyObject = propertyValue.toObject();
+
+    QString propertyName;
+    QString propertyValueString;
+
+    if (!getString(propertyObject, "name",
+                   propertyName, errorOutput)) {
+      return false;
+    }
+
+    if (!getString(propertyObject, "value",
+                   propertyValueString, errorOutput,
+                   EmptyPolicy::Allow)) {
+      return false;
+    }
+
+    // now assign to the correct struct member
+    if (propertyName == "targetColumn") {
+      variable.targetColumn = propertyValueString;
+    }
+    else if (propertyName == "unit") {
+      variable.unit = propertyValueString;
+    }
+    else if (propertyName == "unitID") {
+      variable.unitID = propertyValueString;
+    }
+    else if (propertyName == "dataType") {
+      variable.dataType = propertyValueString;
+    }
+    else if (propertyName == "role") {
+      variable.role = propertyValueString;
+    }
+    else if (propertyName == "relatedColumn") {
+      variable.relatedColumn = propertyValueString;
+    }
+    else if (propertyName == "qualityFlagScheme") {
+      variable.qualityFlagScheme = propertyValueString;
+    }
+  }
+
+  return true;
 }
