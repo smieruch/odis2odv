@@ -11,7 +11,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QMap>
-
+#include <array>
+#include <utility>
 
 //======================================================================
 // Helper Types
@@ -25,7 +26,7 @@ enum class MissingPolicy { NotAllow, Allow };
 //======================================================================
 
 struct VariableDefinition {
-  QString name;
+  QString sourceColumn;
   QString description;
   QString unitText;
   QString propertyID;
@@ -231,7 +232,7 @@ int main(int argc, char *argv[])
 
       // Output the parsed variables
       for (const auto& variable : variables) {
-        out << "Variable name: " << variable.name << "\n"; //name in json
+        out << "Variable: " << variable.sourceColumn << "\n"; //name in json
         // out << "  Description: " << variable.description << "\n";
         // out << "  Unit Text: " << variable.unitText << "\n";
         // out << "  Property ID: " << variable.propertyID << "\n";
@@ -354,8 +355,9 @@ QByteArray readLocalFile(const QString& source, QTextStream& errorOutput)
 //     JSON object -> validated QString
 //----------------------------------------------------------------------
 bool getString(const QJsonObject &object, const QString &key, QString& result,
-                  QTextStream &errorOutput, EmptyPolicy emptyPolicy,
-		  MissingPolicy missingPolicy)
+                  QTextStream &errorOutput,
+                  EmptyPolicy emptyPolicy = EmptyPolicy::NotAllow,
+		  MissingPolicy missingPolicy = MissingPolicy::NotAllow)
 {
     const QJsonValue value = object.value(key);
 
@@ -479,38 +481,29 @@ bool parseDatasetProperties(const QJsonArray& properties,
 			    QMap<QString, QString>& result,
                               QTextStream& errorOutput)
 {
+    for (const QJsonValue& value : properties) {
+        if (!value.isObject()) {
+            errorOutput << "Dataset additionalProperty entry is not a JSON object\n";
+            return false;
+        }
 
-  
-  for (const QJsonValue& value : properties) {
+        const QJsonObject propertyObject = value.toObject();
 
-    
-    if (!value.isObject()) {
-      errorOutput << "Dataset additionalProperty entry is not a JSON object\n";
-      return false;
+        QString propertyName;
+        if (!getString(propertyObject, "name", propertyName, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        QString propertyValue;
+        if (!getString(propertyObject, "value", propertyValue, errorOutput, EmptyPolicy::Allow, MissingPolicy::Allow)) {
+            return false;
+        }
+
+        result.insert(propertyName, propertyValue);
+        errorOutput << "Dataset property: " << propertyName << " = " << propertyValue << "\n";
     }
-    
-    const QJsonObject propertyObject = value.toObject();
 
-    QString propertyName;
-    if (!getString(propertyObject, "name", propertyName, errorOutput)){
-      return false;
-    }
-
-
-    QString propertyValue;
-    if (!getString(propertyObject, "value", propertyValue, errorOutput, EmptyPolicy::Allow)){
-      return false;
-    }
-    
-
-
-    result.insert(propertyName, propertyValue);
-    
-    errorOutput << "Dataset property: " << propertyName << " = " << propertyValue <<  "\n";
-
-  }
-  
-  return true;
+    return true;
 }
 
 //---------------------------------------------------------------------
@@ -535,15 +528,50 @@ bool parseVariables(const QJsonArray& variables,
 
         VariableDefinition variable;
 
-        if (!getString(variableObject, "name", variable.name,
-                      errorOutput, EmptyPolicy::NotAllow,
-                      MissingPolicy::NotAllow)) {
-	  return false;
+        if (!getString(variableObject, "name", variable.name, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
         }
 
-	
-        
-	
+        if (!getString(variableObject, "description", variable.description, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "unitText", variable.unitText, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "propertyID", variable.propertyID, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "targetColumn", variable.targetColumn, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "unit", variable.unit, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "unitID", variable.unitID, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "dataType", variable.dataType, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "role", variable.role, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "relatedColumn", variable.relatedColumn, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
+        if (!getString(variableObject, "qualityFlagScheme", variable.qualityFlagScheme, errorOutput, EmptyPolicy::NotAllow, MissingPolicy::NotAllow)) {
+            return false;
+        }
+
         result.append(variable);
     }
 
