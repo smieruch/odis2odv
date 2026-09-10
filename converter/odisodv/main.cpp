@@ -556,7 +556,8 @@ bool parseVariables(const QJsonArray& variables,
         if (!parseVariableAdditionalProperties(additionalProperties,
                                                variable,
                                                errorOutput)) {
-	  errorOutput << "Error in parseVariableAdditionalProperties\n";
+          errorOutput << "Error in parseVariableAdditionalProperties\n";
+          errorOutput << "While parsing variable: " << variable.name << "\n";
           return false;
         }
 
