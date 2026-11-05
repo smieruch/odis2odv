@@ -13,6 +13,7 @@
 #include <QMap>
 #include <array>
 #include <utility>
+#include <cmath>
 
 //======================================================================
 // Helper Types
@@ -41,6 +42,8 @@ struct VariableDefinition {
   QString relatedColumn;
   QString qualityFlagScheme;
 };
+
+//datasetProperties are stored in QMap<QString, QString> datasetProperties;
 
 //======================================================================
 // Function Declarations
@@ -499,13 +502,47 @@ bool parseDatasetProperties(const QJsonArray& properties,
             return false;
         }
 
-        QString propertyValue;
-        if (!getString(propertyObject, "value", propertyValue, errorOutput, EmptyPolicy::Allow, MissingPolicy::Allow)) {
+	// Handle special integer properties                                                                                                                                                    
+        if (propertyName == "columnNameRow" || propertyName == "dataStartRow") {                                                                                                                
+	  const QJsonValue propertyValue = propertyObject.value("value");                                                                                                                     
+                                                                                                                                                                                                
+            // Check if value is a number (integer)                                                                                                                                             
+            if (!propertyValue.isDouble()) { // JSON numbers are doubles in Qt                                                                                                                  
+                errorOutput << "Property '" << propertyName << "' must be a number\n";                                                                                                          
+                return false;                                                                                                                                                                   
+            }                                                                                                                                                                                   
+                                                                                                                                                                                                
+            double doubleValue = propertyValue.toDouble();                                                                                                                                      
+            // Check if it's actually an integer (no decimal part)                                                                                                                              
+            if (doubleValue != std::floor(doubleValue)) {                                                                                                                                       
+                errorOutput << "Property '" << propertyName << "' must be an integer\n";                                                                                                        
+                return false;                                                                                                                                                                   
+            }                                                                                                                                                                                   
+                                                                                                                                                                                                
+            int intValue = static_cast<int>(doubleValue);                                                                                                                                       
+                                                                                                                                                                                                
+            // Check minimum value                                                                                                                                                              
+            if (intValue < 1) {                                                                                                                                                                 
+                errorOutput << "Property '" << propertyName << "' must be >= 1\n";                                                                                                              
+                return false;                                                                                                                                                                   
+            }                                                                                                                                                                                   
+                                                                                                                                                                                                
+            // Store as string in the map (since that's what the current code expects)                                                                                                          
+            // But we could also store them in a separate integer map if preferred                                                                                                              
+            result.insert(propertyName, QString::number(intValue));
+	    errorOutput << "Dataset property: " << propertyName << " = " << intValue << "\n";
+	} else {                                                                                                                                                                                
+	  // For all other properties, use existing getString logic         
+	  QString propertyValue;
+	  if (!getString(propertyObject, "value", propertyValue, errorOutput, EmptyPolicy::Allow, MissingPolicy::Allow)) {
             return false;
-        }
-
-        result.insert(propertyName, propertyValue);
-        errorOutput << "Dataset property: " << propertyName << " = " << propertyValue << "\n";
+	  }
+	  result.insert(propertyName, propertyValue);
+	  errorOutput << "Dataset property: " << propertyName << " = " << propertyValue << "\n";
+	}
+	
+        
+        
     }
 
     return true;
