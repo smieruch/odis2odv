@@ -98,11 +98,20 @@ int main(int argc, char *argv[])
     parser.addPositionalArgument("command", "Command: inspect, convert, validate");
     parser.addPositionalArgument("source", "Input JSON-LD, ODV file, or URL");
 
+    parser.addOption(QCommandLineOption("data-file",
+                                        "Use specified data file instead of contentUrl",   
+					"path"));
+    
     //read the command line arguments
     parser.process(app);
     
     //output object
     QTextStream out(stdout);
+
+    // Check for --data-file option - store it for use in convert command                               
+    QString dataFilePath = parser.value("data-file");
+    bool useLocalDataFile = !dataFilePath.isEmpty();
+
     
     const QStringList args = parser.positionalArguments();
     
@@ -254,9 +263,13 @@ int main(int argc, char *argv[])
       }
 
       return 0;
-    }
-    else if (command == "convert") {
-      out << "Command not yet implemented: " << command << "\n";
+    } else if (command == "convert") {
+      out << "Convert command\n";
+      if (useLocalDataFile) {
+	out << "Using local data file: " << dataFilePath << "\n";
+      } else {
+	out << "Using data from contenUrl" << "\n";
+      }
       return 1;
     }
     else if (command == "validate") {
